@@ -8,8 +8,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _employeeIdController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _employeeIdController = TextEditingController(text: 'django123');
+  final _passwordController = TextEditingController(text: '123456');
 
   @override
   void dispose() {
@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Login successful')),
             );
-            // Navigate to the next screen or perform any necessary actions
+            ///
           }
         },
         child: BlocBuilder<LoginBloc, LoginState>(
@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16),
                     TextField(
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: false,
                       decoration: const InputDecoration(
                         labelText: 'Password',
                       ),

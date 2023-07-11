@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 part 'login_event.dart';
+
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
@@ -12,16 +13,35 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginButtonPressed>(_onLoginButtonPressed);
   }
 
-  void _onLoginButtonPressed(LoginButtonPressed event, Emitter<LoginState> emit) {
+  //TODO: name route, onGenerate route, go route
+
+  Future<void> _onLoginButtonPressed(
+      LoginButtonPressed event, Emitter<LoginState> emit) async {
     // Handle the LoginButtonPressed event
     // Call your API or perform any necessary login logic here
     print('login success');
 
+    final response = await http.post(
+      Uri.parse('https://testemployee.get-aid.ltd/api/v1/user/login/'),
+      body: jsonEncode({
+        'employee_id': event.employeeId,
+        'password': event.password,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    final jsonResponse = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      emit(LoginSuccess(token: jsonResponse['access']));
+    } else {
+      emit(LoginFailure(error: jsonResponse['detail']));
+    }
+
+    print('login success 2');
   }
 
-
-
-  @override
+/*@override
   Stream<LoginState> mapEventToState(
       LoginEvent event,
       ) async* {
@@ -49,5 +69,5 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield const LoginFailure(error: 'Failed to connect to the server');
       }
     }
-  }
+  }*/
 }
