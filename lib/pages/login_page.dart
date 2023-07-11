@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'login/login_bloc.dart';
+import '../login/login_bloc.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -33,9 +33,14 @@ class _LoginPageState extends State<LoginPage> {
               SnackBar(content: Text(state.error)),
             );
           } else if (state is LoginSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Login successful')),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Login successful')),
+              );
+            }
+            // Navigator.pushReplacementNamed(context, '/home');
+            Navigator.pushNamed(context, '/home');
+
             ///
           }
         },
@@ -75,7 +80,8 @@ class _LoginPageState extends State<LoginPage> {
                       child: const Text('Login'),
                     ),
                     const SizedBox(height: 16),
-                    if (state is LoginLoading) const CircularProgressIndicator(),
+                    if (state is LoginLoading)
+                      const CircularProgressIndicator(),
                   ],
                 ),
               ),
