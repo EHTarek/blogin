@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String token;
+
+  const HomePage({super.key, required this.token});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -14,8 +17,13 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Home'),
       ),
-      body: const Center(
-        child: Text('Dashboard'),
+      body: LoaderOverlay(
+        child: Center(
+          child: ElevatedButton(onPressed: (){
+            // context.loaderOverlay.show();
+            // context.loaderOverlay.hide();
+          }, child: Text('Click'),),
+        ),
       ),
     );
   }

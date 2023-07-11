@@ -1,13 +1,17 @@
+import 'package:blogin/navigation/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import '../login/login_bloc.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final _employeeIdController = TextEditingController(text: 'django123');
   final _passwordController = TextEditingController(text: '123456');
 
@@ -26,25 +30,31 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         title: const Text('Login'),
       ),
-      body: BlocListener<LoginBloc, LoginState>(
-        listener: (context, state) {
-          if (state is LoginFailure) {
+      // body: BlocListener<LoginBloc, LoginState>(
+      body: BlocConsumer<LoginBloc, LoginState>(
+        listenWhen: (previous, current) => previous != current && previous is LoginInitial,
+        listener: (context, loginState) {
+          if (loginState is LoginFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error)),
+              SnackBar(content: Text(loginState.error)),
             );
-          } else if (state is LoginSuccess) {
+          } else if (loginState is LoginSuccess) {
             if (mounted) {
+
+              context.loaderOverlay.show();
+
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Login successful')),
               );
-            }
-            // Navigator.pushReplacementNamed(context, '/home');
-            Navigator.pushNamed(context, '/home');
 
+            // Navigator.pushReplacementNamed(context, '/home');
+            Navigator.pushNamed(context, Routes.kHome, arguments: loginState.token);
+            }
+            // context.loaderOverlay.hide();
             ///
           }
         },
-        child: BlocBuilder<LoginBloc, LoginState>(
+        // child: BlocBuilder<LoginBloc, LoginState>(
           builder: (context, state) {
             return Center(
               child: Padding(
@@ -87,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             );
           },
-        ),
+        // ),
       ),
     );
   }

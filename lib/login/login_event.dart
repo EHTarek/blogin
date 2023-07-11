@@ -17,5 +17,5 @@ class LoginButtonPressed extends LoginEvent {
   });
 
   @override
-  List<Object> get props => [employeeId, password];
+  List<Object> get props => [];
 }
