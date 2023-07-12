@@ -12,14 +12,13 @@ class RouteGenerator {
       case Routes.kRoot:
         return MaterialPageRoute(builder: (_) => const LoginPage());
       case Routes.kHome:
-        if (args is String) {
+
           return MaterialPageRoute(
             builder: (_) => HomePage(
-              token: args,
+              token: args as String,
             ),
           );
-        }
-        return _errorRoute();
+
       default:
         return _errorRoute();
     }
@@ -32,7 +31,7 @@ class RouteGenerator {
           title: const Text('Error'),
         ),
         body: const Center(
-          child: Text('ERROR'),
+          child: Text('Route Error'),
         ),
       );
     });

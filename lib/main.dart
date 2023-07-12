@@ -24,15 +24,13 @@ class LoginApp extends StatelessWidget {
           create: (context) => LoginBloc(),
         ),
       ],
-      child: GlobalLoaderOverlay(
-        child: MaterialApp(
-          title: 'Login App',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          initialRoute: Routes.kHome,
-          onGenerateRoute: RouteGenerator.generateRoute,
+      child: MaterialApp(
+        title: 'Login App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
         ),
+        initialRoute: Routes.kRoot,
+        onGenerateRoute: RouteGenerator.generateRoute,
       ),
     );
   }

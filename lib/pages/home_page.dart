@@ -17,13 +17,11 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Home'),
       ),
-      body: LoaderOverlay(
-        child: Center(
-          child: ElevatedButton(onPressed: (){
-            // context.loaderOverlay.show();
-            // context.loaderOverlay.hide();
-          }, child: Text('Click'),),
-        ),
+      body: Center(
+        child: ElevatedButton(onPressed: (){
+          // context.loaderOverlay.show();
+          // context.loaderOverlay.hide();
+        }, child: Text('Click'),),
       ),
     );
   }

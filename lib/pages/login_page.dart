@@ -24,37 +24,40 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final loginBloc = BlocProvider.of<LoginBloc>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      // body: BlocListener<LoginBloc, LoginState>(
-      body: BlocConsumer<LoginBloc, LoginState>(
-        listenWhen: (previous, current) => previous != current && previous is LoginInitial,
-        listener: (context, loginState) {
-          if (loginState is LoginFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(loginState.error)),
-            );
-          } else if (loginState is LoginSuccess) {
-            if (mounted) {
-
-              context.loaderOverlay.show();
-
+    return LoaderOverlay(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Login'),
+        ),
+        // body: BlocListener<LoginBloc, LoginState>(
+        body: BlocConsumer<LoginBloc, LoginState>(
+          // listenWhen: (previous, current) => previous != current && previous is LoginInitial,
+          listener: (context, loginState) {
+            if (loginState is LoginFailure) {
+              context.loaderOverlay.hide();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Login successful')),
+                SnackBar(content: Text(loginState.error)),
               );
-
-            // Navigator.pushReplacementNamed(context, '/home');
-            Navigator.pushNamed(context, Routes.kHome, arguments: loginState.token);
             }
-            // context.loaderOverlay.hide();
-            ///
-          }
-        },
-        // child: BlocBuilder<LoginBloc, LoginState>(
+
+            if(loginState is LoginInitial){
+              context.loaderOverlay.show();
+            }
+
+
+            if (loginState is LoginSuccess) {
+              context.loaderOverlay.hide();
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login successful')));
+
+                // Navigator.pushReplacementNamed(context, '/home');
+                Navigator.pushNamed(context, Routes.kHome, arguments: loginState.token);
+                // Navigator.pushReplacementNamed(context, Routes.kHome, arguments: loginState.token);
+
+              ///
+            }
+          },
+          // child: BlocBuilder<LoginBloc, LoginState>(
           builder: (context, state) {
             return Center(
               child: Padding(
@@ -82,7 +85,7 @@ class LoginPageState extends State<LoginPage> {
                         final employeeId = _employeeIdController.text;
                         final password = _passwordController.text;
 
-                        loginBloc.add(LoginButtonPressed(
+                        context.read<LoginBloc>().add(LoginButtonPressed(
                           employeeId: employeeId,
                           password: password,
                         ));
@@ -90,14 +93,14 @@ class LoginPageState extends State<LoginPage> {
                       child: const Text('Login'),
                     ),
                     const SizedBox(height: 16),
-                    if (state is LoginLoading)
-                      const CircularProgressIndicator(),
+                    // if (state is LoginLoading) const CircularProgressIndicator(),
                   ],
                 ),
               ),
             );
           },
-        // ),
+          // ),
+        ),
       ),
     );
   }

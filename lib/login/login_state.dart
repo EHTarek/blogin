@@ -10,9 +10,6 @@ abstract class LoginState extends Equatable {
 class LoginInitial extends LoginState {}
 
 class LoginLoading extends LoginState {
-  final bool isLoading;
-
-  const LoginLoading({required this.isLoading});
 
   @override
   List<Object> get props => [];
