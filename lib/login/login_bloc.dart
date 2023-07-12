@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:bloc/bloc.dart';
+import 'package:blogin/services/api_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -24,7 +25,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     // Call your API or perform any necessary login logic here
     print('login success');
 
-    try{
+
+    ApiService apiService = ApiService();
+
+    List result = apiService.getData(event.employeeId, event.password) as List;
+
+    print(result);
+
+
+
+
+  /*  try{
       final response = await http.post(
         Uri.parse('https://testemployee.get-aid.ltd/api/v1/user/login/'),
         body: jsonEncode({
@@ -44,11 +55,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       print('login success 2');
     }catch(e){
-      print('login success @#$e');
+      print('login success $e');
 
       emit(const LoginFailure(error: ''));
-    }
-
+    }*/
 
   }
 
