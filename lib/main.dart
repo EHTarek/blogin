@@ -3,8 +3,9 @@ import 'package:blogin/navigation/route_generator.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loader_overlay/loader_overlay.dart';
-import 'login/login_bloc.dart';
+
+import 'bloc/home/home_bloc.dart';
+import 'bloc/login/login_bloc.dart';
 
 // ToDo: name route, onGenerate route, go route, BlocConsumer, BlocObserver, Repository Pattern, Internet State checker,
 
@@ -22,6 +23,9 @@ class LoginApp extends StatelessWidget {
       providers: [
         BlocProvider<LoginBloc>(
           create: (context) => LoginBloc(),
+        ),
+        BlocProvider<HomeBloc>(
+          create: (context) => HomeBloc(),
         ),
       ],
       child: MaterialApp(

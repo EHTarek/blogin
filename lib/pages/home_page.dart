@@ -1,28 +1,71 @@
+import 'package:blogin/navigation/preference_method.dart';
 import 'package:flutter/material.dart';
-import 'package:loader_overlay/loader_overlay.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/home/home_bloc.dart';
 
 class HomePage extends StatefulWidget {
-  final String token;
-
-  const HomePage({super.key, required this.token});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  String tempText = '';
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: Center(
-        child: ElevatedButton(onPressed: (){
-          // context.loaderOverlay.show();
-          // context.loaderOverlay.hide();
-        }, child: Text('Click'),),
-      ),
+    return BlocConsumer<HomeBloc, HomeState>(
+      listener: (context, homeState) {
+        if (homeState is HomeUpdateDone) {
+          tempText = homeState.updateText;
+        } else {
+          tempText = 'Not updated';
+        }
+        print(tempText);
+      },
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Home'),
+            actions: [
+              IconButton(
+                onPressed: () async {
+                  PreferenceMethod preferenceMethod = PreferenceMethod();
+                  print('Home Page');
+                  String token = await preferenceMethod.getTokenAccess();
+                  print(token);
+                  // context.loaderOverlay.show();
+                  // context.loaderOverlay.hide();
+                },
+                icon: const Icon(Icons.get_app),
+              ),
+            ],
+          ),
+          body: BlocConsumer<HomeBloc, HomeState>(
+            listener: (context, homeState) {
+              if (homeState is HomeUpdateDone) {
+                tempText = homeState.updateText;
+              } else {
+                tempText = 'Not updated';
+              }
+              print(tempText);
+            },
+            builder: (context, state) {
+              return Column(
+                children: [
+                  Text(tempText),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: const Text('Change App Title'),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

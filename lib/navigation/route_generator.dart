@@ -11,13 +11,15 @@ class RouteGenerator {
     switch (settings.name) {
       case Routes.kRoot:
         return MaterialPageRoute(builder: (_) => const LoginPage());
-      case Routes.kHome:
-
+/*      case Routes.kHome:
           return MaterialPageRoute(
             builder: (_) => HomePage(
               token: args as String,
             ),
-          );
+          );*/
+
+      case Routes.kHome:
+        return MaterialPageRoute(builder: (_) => const HomePage());
 
       default:
         return _errorRoute();

@@ -1,8 +1,9 @@
+import 'package:blogin/bloc/home/home_bloc.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import '../login/login_bloc.dart';
+import '../bloc/login/login_bloc.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,7 +25,6 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return LoaderOverlay(
       child: Scaffold(
         appBar: AppBar(
@@ -41,20 +41,18 @@ class LoginPageState extends State<LoginPage> {
               );
             }
 
-            if(loginState is LoginInitial){
+            if (loginState is LoginInitial) {
               context.loaderOverlay.show();
             }
 
-
             if (loginState is LoginSuccess) {
               context.loaderOverlay.hide();
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login successful')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Login successful')));
 
-                // Navigator.pushReplacementNamed(context, '/home');
-                Navigator.pushNamed(context, Routes.kHome, arguments: loginState.token);
-                // Navigator.pushReplacementNamed(context, Routes.kHome, arguments: loginState.token);
-
-              ///
+              // Navigator.pushReplacementNamed(context, '/home');
+              Navigator.pushNamed(context, Routes.kHome);
+              // Navigator.pushReplacementNamed(context, Routes.kHome, arguments: loginState.token);
             }
           },
           // child: BlocBuilder<LoginBloc, LoginState>(
@@ -85,10 +83,14 @@ class LoginPageState extends State<LoginPage> {
                         final employeeId = _employeeIdController.text;
                         final password = _passwordController.text;
 
+                        context
+                            .read<HomeBloc>()
+                            .add(HomeTextUpdate(newText: employeeId));
+
                         context.read<LoginBloc>().add(LoginButtonPressed(
-                          employeeId: employeeId,
-                          password: password,
-                        ));
+                              employeeId: employeeId,
+                              password: password,
+                            ));
                       },
                       child: const Text('Login'),
                     ),
