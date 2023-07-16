@@ -1,4 +1,5 @@
 import 'package:blogin/app_observer.dart';
+import 'package:blogin/bloc/message/message_bloc.dart';
 import 'package:blogin/navigation/route_generator.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:flutter/material.dart';
@@ -27,13 +28,16 @@ class LoginApp extends StatelessWidget {
         BlocProvider<HomeBloc>(
           create: (context) => HomeBloc(),
         ),
+        BlocProvider<MessageBloc>(
+          create: (context) => MessageBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'Login App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        initialRoute: Routes.kRoot,
+        initialRoute: Routes.kMessage,
         onGenerateRoute: RouteGenerator.generateRoute,
       ),
     );

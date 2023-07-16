@@ -12,23 +12,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String tempText = '';
 
+  String tempText = '';
+  TextEditingController titleEditingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+
     return BlocConsumer<HomeBloc, HomeState>(
       listener: (context, homeState) {
         if (homeState is HomeUpdateDone) {
           tempText = homeState.updateText;
-        } else {
-          tempText = 'Not updated';
         }
         print(tempText);
       },
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Home'),
+            title: Text(tempText),
             actions: [
               IconButton(
                 onPressed: () async {
@@ -43,26 +43,31 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          body: BlocConsumer<HomeBloc, HomeState>(
-            listener: (context, homeState) {
-              if (homeState is HomeUpdateDone) {
-                tempText = homeState.updateText;
-              } else {
-                tempText = 'Not updated';
-              }
-              print(tempText);
-            },
-            builder: (context, state) {
-              return Column(
-                children: [
-                  Text(tempText),
-                  ElevatedButton(
-                    onPressed: () {},
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextFormField(
+                  controller: titleEditingController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (vale){
+                    context.read<HomeBloc>().add(HomeTextUpdate(newText: titleEditingController.text));
+                  },
+                ),
+                SizedBox(
+                  width: double.maxFinite,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<HomeBloc>().add(HomeTextUpdate(newText: titleEditingController.text));
+                    },
                     child: const Text('Change App Title'),
                   ),
-                ],
-              );
-            },
+                ),
+              ],
+            ),
           ),
         );
       },

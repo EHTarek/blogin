@@ -83,9 +83,9 @@ class LoginPageState extends State<LoginPage> {
                         final employeeId = _employeeIdController.text;
                         final password = _passwordController.text;
 
-                        context
-                            .read<HomeBloc>()
-                            .add(HomeTextUpdate(newText: employeeId));
+                        // context
+                        //     .read<HomeBloc>()
+                        //     .add(HomeTextUpdate(newText: employeeId));
 
                         context.read<LoginBloc>().add(LoginButtonPressed(
                               employeeId: employeeId,
