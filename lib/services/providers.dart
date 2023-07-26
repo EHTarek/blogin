@@ -1,3 +1,4 @@
+/*
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/home/home_bloc.dart';
@@ -10,4 +11,4 @@ List<BlocProvider> myBlocProvider =[
   BlocProvider<HomeBloc>(
     create: (context) => HomeBloc(),
   ),
-];
+];*/

@@ -9,7 +9,7 @@ class PreferenceMethod {
     await prefs.setString(PreferenceKey.tokenAccess, key);
   }
 
-  getTokenAccess() async {
+  Future<String?> getTokenAccess() async {
     prefs = await SharedPreferences.getInstance();
     return prefs.getString(PreferenceKey.tokenAccess);
   }
@@ -22,5 +22,10 @@ class PreferenceMethod {
   Future<String> getTokenRefresh() async {
     prefs = await SharedPreferences.getInstance();
     return prefs.getString(PreferenceKey.tokenRefresh) ?? '';
+  }
+
+  Future<void> removeData(String key) async{
+    prefs = await SharedPreferences.getInstance();
+    prefs.remove(key);
   }
 }

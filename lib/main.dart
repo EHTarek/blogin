@@ -4,14 +4,22 @@ import 'package:blogin/navigation/route_generator.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:device_info_plus/device_info_plus.dart';
 
 import 'bloc/home/home_bloc.dart';
 import 'bloc/login/login_bloc.dart';
 
 // ToDo: name route, onGenerate route, go route, BlocConsumer, BlocObserver, Repository Pattern, Internet State checker,
 
-void main() {
+main() {
   Bloc.observer = const AppObserver();
+
+ /* final deviceInfoPlugin = DeviceInfoPlugin();
+  final deviceInfo = await deviceInfoPlugin.deviceInfo;
+  final allInfo = deviceInfo.data;
+
+  print(allInfo);*/
+
   runApp(const LoginApp());
 }
 
@@ -37,7 +45,7 @@ class LoginApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        initialRoute: Routes.kMessage,
+        initialRoute: Routes.kRoot,
         onGenerateRoute: RouteGenerator.generateRoute,
       ),
     );

@@ -8,7 +8,7 @@ class ApiService {
       body: jsonEncode({
         'employee_id': employeeId,
         'password': password,
-        "device_id":"UPB3.230519.006"
+        "device_id":"RKQ1.211119.001"
       }),
       headers: {'Content-Type': 'application/json'},
     );

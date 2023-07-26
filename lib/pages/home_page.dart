@@ -1,3 +1,4 @@
+import 'package:blogin/navigation/preference_key.dart';
 import 'package:blogin/navigation/preference_method.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,12 +35,11 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () async {
                   PreferenceMethod preferenceMethod = PreferenceMethod();
                   print('Home Page');
-                  String token = await preferenceMethod.getTokenAccess();
+                  String? token = await preferenceMethod.getTokenAccess();
                   print(token);
-                  // context.loaderOverlay.show();
-                  // context.loaderOverlay.hide();
+                  preferenceMethod.removeData(PreferenceKey.tokenAccess);
                 },
-                icon: const Icon(Icons.get_app),
+                icon: const Icon(Icons.delete_forever),
               ),
             ],
           ),

@@ -41,6 +41,8 @@ dependencies:
   bloc:
   loader_overlay: ^2.2.0
   shared_preferences: ^2.2.0
+  device_info_plus: ^9.0.2
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_test:

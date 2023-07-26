@@ -1,20 +1,23 @@
-import 'package:blogin/bloc/home/home_bloc.dart';
+import 'package:blogin/navigation/preference_method.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import '../bloc/login/login_bloc.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
 
   @override
   LoginPageState createState() => LoginPageState();
 }
 
 class LoginPageState extends State<LoginPage> {
-  final _employeeIdController = TextEditingController(text: 'django123');
-  final _passwordController = TextEditingController(text: '123456');
+  final _employeeIdController = TextEditingController(text: 'tarikul');
+  final _passwordController = TextEditingController(text: '1234');
 
   @override
   void dispose() {
@@ -24,7 +27,15 @@ class LoginPageState extends State<LoginPage> {
   }
 
   @override
+  initState() {
+    super.initState();
+    getDeviceInfo();
+    userLoggedIn();
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return LoaderOverlay(
       child: Scaffold(
         appBar: AppBar(
@@ -52,10 +63,8 @@ class LoginPageState extends State<LoginPage> {
 
               // Navigator.pushReplacementNamed(context, '/home');
               Navigator.pushNamed(context, Routes.kHome);
-              // Navigator.pushReplacementNamed(context, Routes.kHome, arguments: loginState.token);
             }
           },
-          // child: BlocBuilder<LoginBloc, LoginState>(
           builder: (context, state) {
             return Center(
               child: Padding(
@@ -82,11 +91,6 @@ class LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         final employeeId = _employeeIdController.text;
                         final password = _passwordController.text;
-
-                        // context
-                        //     .read<HomeBloc>()
-                        //     .add(HomeTextUpdate(newText: employeeId));
-
                         context.read<LoginBloc>().add(LoginButtonPressed(
                               employeeId: employeeId,
                               password: password,
@@ -95,15 +99,31 @@ class LoginPageState extends State<LoginPage> {
                       child: const Text('Login'),
                     ),
                     const SizedBox(height: 16),
-                    // if (state is LoginLoading) const CircularProgressIndicator(),
                   ],
                 ),
               ),
             );
           },
-          // ),
         ),
       ),
     );
+  }
+
+  Future<void> getDeviceInfo() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    print('Running on ${androidInfo.model}');
+    print(androidInfo.id);
+  }
+
+  void userLoggedIn() async{
+    PreferenceMethod preferenceMethod = PreferenceMethod();
+    String? token = await preferenceMethod.getTokenAccess();
+    if(token!.isNotEmpty){
+      bool hasExpired = JwtDecoder.isExpired(token);
+      if(!hasExpired){
+        Navigator.pushReplacementNamed(context, Routes.kHome);
+      }
+    }
   }
 }
