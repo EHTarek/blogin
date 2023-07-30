@@ -62,7 +62,8 @@ class LoginPageState extends State<LoginPage> {
                   const SnackBar(content: Text('Login successful')));
 
               // Navigator.pushReplacementNamed(context, '/home');
-              Navigator.pushNamed(context, Routes.kHome);
+              // Navigator.pushNamed(context, Routes.kHome);
+              Navigator.pushNamed(context, Routes.kShopping);
             }
           },
           builder: (context, state) {
@@ -122,7 +123,9 @@ class LoginPageState extends State<LoginPage> {
     if(token!.isNotEmpty){
       bool hasExpired = JwtDecoder.isExpired(token);
       if(!hasExpired){
-        Navigator.pushReplacementNamed(context, Routes.kHome);
+        if(mounted){
+          Navigator.pushReplacementNamed(context, Routes.kShopping);
+        }
       }
     }
   }

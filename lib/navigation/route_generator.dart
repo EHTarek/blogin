@@ -2,6 +2,7 @@ import 'package:blogin/navigation/routes.dart';
 import 'package:blogin/pages/home_page.dart';
 import 'package:blogin/pages/login_page.dart';
 import 'package:blogin/pages/message_page.dart';
+import 'package:blogin/pages/shopping_page.dart';
 import 'package:flutter/material.dart';
 
 class RouteGenerator {
@@ -23,6 +24,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const HomePage());
       case Routes.kMessage:
         return MaterialPageRoute(builder: (_) => const MessagePage());
+      case Routes.kShopping:
+        return MaterialPageRoute(builder: (_) => const ShoppingPage());
 
       default:
         return _errorRoute();
