@@ -25,7 +25,7 @@ class RouteGenerator {
       case Routes.kMessage:
         return MaterialPageRoute(builder: (_) => const MessagePage());
       case Routes.kShopping:
-        return MaterialPageRoute(builder: (_) => const ShoppingPage());
+        return MaterialPageRoute(builder: (_) => ShoppingPage());
 
       default:
         return _errorRoute();

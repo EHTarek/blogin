@@ -1,4 +1,5 @@
 import 'package:blogin/app_observer.dart';
+import 'package:blogin/bloc/cart_item/cart_item_bloc.dart';
 import 'package:blogin/bloc/message/message_bloc.dart';
 import 'package:blogin/navigation/route_generator.dart';
 import 'package:blogin/navigation/routes.dart';
@@ -14,7 +15,7 @@ import 'bloc/login/login_bloc.dart';
 main() {
   Bloc.observer = const AppObserver();
 
- /* final deviceInfoPlugin = DeviceInfoPlugin();
+  /* final deviceInfoPlugin = DeviceInfoPlugin();
   final deviceInfo = await deviceInfoPlugin.deviceInfo;
   final allInfo = deviceInfo.data;
 
@@ -39,10 +40,15 @@ class LoginApp extends StatelessWidget {
         BlocProvider<MessageBloc>(
           create: (context) => MessageBloc(),
         ),
+        BlocProvider<CartItemBloc>(
+          create: (context) => CartItemBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'Login App',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          useMaterial3: true,
           primarySwatch: Colors.blue,
         ),
         initialRoute: Routes.kRoot,

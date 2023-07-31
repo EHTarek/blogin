@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/cart_item/cart_item_bloc.dart';
+import '../model/shopping_item_model.dart';
 
 class ShoppingPage extends StatelessWidget {
   const ShoppingPage({super.key});
@@ -8,6 +12,26 @@ class ShoppingPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping'),
+        actions: [
+          BlocBuilder<CartItemBloc, CartItemState>(
+            builder: (context, itemState) {
+              if(itemState is CartItemUpdateState) {
+                return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Badge(
+                  label: Text(itemState.count.toString()),
+                  child: const Icon(Icons.add_shopping_cart),
+                ),
+              );
+              }
+
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Icon(Icons.add_shopping_cart),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -15,53 +39,158 @@ class ShoppingPage extends StatelessWidget {
           slivers: [
             SliverGrid(
               delegate: SliverChildBuilderDelegate(
-                (context, index) => Card(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: double.maxFinite,
-                        child: Image.network(
-                          'https://nawon.com.vn/wp-content/uploads/2020/11/Orange-Juice-Drink-is-a-healthy-natural-product-500ml-Bottle-Brand-Nawon.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      const Divider(color: Colors.black38),
-                      const Text(
-                        'Juice 250 ml',
-                        textAlign: TextAlign.center,
-                      ),
-                      const Text('Stock: 10'),
-                      const Text('25.00 Cr'),
-                      const Text(
-                        '25.00 tk',
-                        style:
-                            TextStyle(decoration: TextDecoration.lineThrough),
-                      ),
-                      const Spacer(),
-                      SizedBox(
-                        width: double.maxFinite,
-                        child: MaterialButton(
-                          color: Colors.blueAccent,
-                          onPressed: () {},
-                          child: const Text('Add Cart',style: TextStyle(color: Colors.white),),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                childCount: 10,
+                    (context, index) => CartItem(index: index),
+                childCount: ShoppingItemModel.shoppingItems.length,
               ),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 mainAxisSpacing: 5,
                 crossAxisSpacing: 5,
-                mainAxisExtent: 250,
+                mainAxisExtent: 290,
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class CartItem extends StatelessWidget {
+  final int index;
+
+  const CartItem({
+    required this.index,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CartItemBloc, CartItemState>(
+      builder: (context, cartItemState) {
+        return Card(
+          color: Colors.white,
+          clipBehavior: Clip.hardEdge,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: 100,
+                    width: double.maxFinite,
+                    child: Image.network(
+                      ShoppingItemModel.shoppingItems[index].img,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Divider(color: Colors.black38),
+                      Text(
+                        ShoppingItemModel.shoppingItems[index].name,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                          'Stock: ${ShoppingItemModel.shoppingItems[index]
+                              .stock}'),
+                      Text(
+                          '${ShoppingItemModel.shoppingItems[index].credit
+                              .toStringAsFixed(2)} Cr'),
+                      Text(
+                        '${ShoppingItemModel.shoppingItems[index].tk
+                            .toStringAsFixed(2)} tk',
+                        style: const TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const Spacer(),
+              if (cartItemState is CartItemInitial)
+                Material(
+                  color: Colors.lightBlue,
+                  child: InkWell(
+                    onTap: () {
+                      print('tapped');
+                      context
+                          .read<CartItemBloc>()
+                          .add(AddToCartEvent(itemIndex: index));
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      color: Colors.transparent,
+                      height: 40,
+                      width: double.maxFinite,
+                      child: const Text(
+                        'Add Cart',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              if (cartItemState is CartItemUpdateState)
+                Container(
+                  width: double.maxFinite,
+                  padding: EdgeInsets.zero,
+                  // color: Colors.green,
+                  height: 40,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Material(
+                        color: Colors.green,
+                        child: InkWell(
+                          onTap: () {
+                            context
+                                .read<CartItemBloc>()
+                                .add(CartItemDecrementEvent(itemIndex: index));
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(2),
+                            color: Colors.transparent,
+                            child: const Icon(
+                              Icons.remove,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Text(cartItemState.count.toString()),
+                      // Text('0'),
+                      Material(
+                        color: Colors.green,
+                        child: InkWell(
+                          onTap: () {
+                            context
+                                .read<CartItemBloc>()
+                                .add(CartItemIncrementEvent(itemIndex: index));
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(2),
+                            color: Colors.transparent,
+                            child: const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
