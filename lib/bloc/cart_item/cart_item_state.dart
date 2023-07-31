@@ -10,10 +10,10 @@ class CartItemInitial extends CartItemState {
 }
 
 class CartItemUpdateState extends CartItemState {
-  final int count;
-  final int itemIndex;
+  // final ShoppingItemModel itemModel;
+  final List<Map<int, ShoppingItemModel>> cartItem;
 
-  const CartItemUpdateState({required this.count, required this.itemIndex});
+  const CartItemUpdateState({required this.cartItem});
 
   @override
   List<Object> get props => [];

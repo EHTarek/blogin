@@ -15,14 +15,14 @@ class ShoppingPage extends StatelessWidget {
         actions: [
           BlocBuilder<CartItemBloc, CartItemState>(
             builder: (context, itemState) {
-              if(itemState is CartItemUpdateState) {
+              if (itemState is CartItemUpdateState) {
                 return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Badge(
-                  label: Text(itemState.count.toString()),
-                  child: const Icon(Icons.add_shopping_cart),
-                ),
-              );
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Badge(
+                    label: Text(itemState.cartItem.length.toString()),
+                    child: const Icon(Icons.add_shopping_cart),
+                  ),
+                );
               }
 
               return const Padding(
@@ -39,7 +39,7 @@ class ShoppingPage extends StatelessWidget {
           slivers: [
             SliverGrid(
               delegate: SliverChildBuilderDelegate(
-                    (context, index) => CartItem(index: index),
+                (context, index) => CartItem(index: index),
                 childCount: ShoppingItemModel.shoppingItems.length,
               ),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -96,14 +96,11 @@ class CartItem extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                          'Stock: ${ShoppingItemModel.shoppingItems[index]
-                              .stock}'),
+                          'Stock: ${ShoppingItemModel.shoppingItems[index].stock}'),
                       Text(
-                          '${ShoppingItemModel.shoppingItems[index].credit
-                              .toStringAsFixed(2)} Cr'),
+                          '${ShoppingItemModel.shoppingItems[index].credit.toStringAsFixed(2)} Cr'),
                       Text(
-                        '${ShoppingItemModel.shoppingItems[index].tk
-                            .toStringAsFixed(2)} tk',
+                        '${ShoppingItemModel.shoppingItems[index].tk.toStringAsFixed(2)} tk',
                         style: const TextStyle(
                           decoration: TextDecoration.lineThrough,
                           fontSize: 12,
@@ -119,10 +116,12 @@ class CartItem extends StatelessWidget {
                   color: Colors.lightBlue,
                   child: InkWell(
                     onTap: () {
+                      context.read<CartItemBloc>().add(AddToCartEvent(
+                            itemModel: ShoppingItemModel.shoppingItems[index],
+                            id: ShoppingItemModel.shoppingItems[index].id,
+                          ));
                       print('tapped');
-                      context
-                          .read<CartItemBloc>()
-                          .add(AddToCartEvent(itemIndex: index));
+                      print('Current index = $index');
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -152,10 +151,16 @@ class CartItem extends StatelessWidget {
                           onTap: () {
                             context
                                 .read<CartItemBloc>()
-                                .add(CartItemDecrementEvent(itemIndex: index));
+                                .add(CartItemDecrementEvent(
+                                  itemModel:
+                                      ShoppingItemModel.shoppingItems[index],
+                                  id: ShoppingItemModel.shoppingItems[index].id,
+                                ));
+
+                            print('Current index = $index');
                           },
                           child: Container(
-                            padding: EdgeInsets.all(2),
+                            padding: const EdgeInsets.all(2),
                             color: Colors.transparent,
                             child: const Icon(
                               Icons.remove,
@@ -164,7 +169,7 @@ class CartItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Text(cartItemState.count.toString()),
+                      Text(cartItemState.cartItem.length.toString()),
                       // Text('0'),
                       Material(
                         color: Colors.green,
@@ -172,10 +177,16 @@ class CartItem extends StatelessWidget {
                           onTap: () {
                             context
                                 .read<CartItemBloc>()
-                                .add(CartItemIncrementEvent(itemIndex: index));
+                                .add(CartItemIncrementEvent(
+                                  itemModel:
+                                      ShoppingItemModel.shoppingItems[index],
+                                  id: ShoppingItemModel.shoppingItems[index].id,
+                                ));
+
+                            print('Current index = $index');
                           },
                           child: Container(
-                            padding: EdgeInsets.all(2),
+                            padding: const EdgeInsets.all(2),
                             color: Colors.transparent,
                             child: const Icon(
                               Icons.add,
