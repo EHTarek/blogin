@@ -9,12 +9,39 @@ class CartItemInitial extends CartItemState {
   List<Object> get props => [];
 }
 
+/*class CartItemLoadingState extends CartItemState {
+  @override
+  List<Object> get props => [];
+}*/
+
+class CartItemLoadedState extends CartItemState {
+  final List<ShoppingItemModel> cartItem;
+
+  const CartItemLoadedState({required this.cartItem});
+
+  @override
+  List<Object> get props => [];
+}
+
+class CartItemAddToCartState extends CartItemState {
+  final int quantity;
+  const CartItemAddToCartState({required this.quantity});
+
+  @override
+  List<Object> get props => [];
+}
+
+
+
 class CartItemUpdateState extends CartItemState {
-  // final ShoppingItemModel itemModel;
-  final List<Map<int, ShoppingItemModel>> cartItem;
+  final int quantity;
+  const CartItemUpdateState({required this.quantity});
 
-  const CartItemUpdateState({required this.cartItem});
+  @override
+  List<Object> get props => [];
+}
 
+class CartItemErrorState extends CartItemState {
   @override
   List<Object> get props => [];
 }
