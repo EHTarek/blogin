@@ -9,10 +9,10 @@ class CartItemInitial extends CartItemState {
   List<Object> get props => [];
 }
 
-/*class CartItemLoadingState extends CartItemState {
+class CartItemLoadingState extends CartItemState {
   @override
   List<Object> get props => [];
-}*/
+}
 
 class CartItemLoadedState extends CartItemState {
   final List<ShoppingItemModel> cartItem;

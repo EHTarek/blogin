@@ -15,10 +15,10 @@ class CartItemBloc extends Bloc<CartItemEvent, CartItemState> {
     // final List<ShoppingItemModel> cartItem = [];
 
     on<CartItemLoadDataEvent>((event, emit) async {
-      // emit(CartItemLoadingState());
+      emit(CartItemLoadingState());
       // Future.delayed(const Duration(microseconds: 500000));
       try {
-        dbHelper.init();
+        await dbHelper.init();
 
         emit(CartItemLoadedState(cartItem: ShoppingItemModel.shoppingItems));
       } catch (e) {
