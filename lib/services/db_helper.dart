@@ -1,3 +1,4 @@
+import 'package:blogin/model/shopping_item_model.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,8 +15,7 @@ class DbHelper {
   static const columnStock = 'stock';
   static const columnCredit = 'credit';
   static const columnTk = 'tk';
-
-  // static const columnQuantity = 'quantity';
+  static const columnQuantity = 'quantity';
 
   // this opens the database (and creates it if it doesn't exist)
   Future<Database> init() async {
@@ -34,65 +34,90 @@ class DbHelper {
 
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
-    await db.execute('''
-          CREATE TABLE $table (
+    await db.execute(""" CREATE TABLE $table (
             $columnId INTEGER NOT NULL PRIMARY KEY,
             $columnImg TEXT NOT NULL,
             $columnName TEXT NOT NULL,
             $columnStock INTEGER NOT NULL,
             $columnCredit FLOAT(2) NOT NULL,
-            $columnTk FLOAT(2) NOT NULL
-          )
-          ''');
-    // $columnQuantity INTEGER NOT NULL,
+            $columnTk FLOAT(2) NOT NULL,
+            $columnQuantity INTEGER NOT NULL
+          ) """);
   }
 
-  // Helper methods
 
-  // Inserts a row in the database where each key in the Map is a column name
-  // and the value is the column value. The return value is the id of the
-  // inserted row.
-  Future<int> insert(Map<String, dynamic> row) async {
+  Future<void> dbInsert({required ShoppingItemModel item, required int quantity}) async {
     Database database = await init();
-    return await database.insert(table, row,conflictAlgorithm: ConflictAlgorithm.replace);
+
+    bool itemExists = await itemExistsInDatabase(database, table, item.id);
+
+    if (!itemExists) {
+      // If the item does not exist, insert a new row
+      await database.rawInsert("""
+      INSERT INTO $table ($columnId, $columnImg, $columnName, $columnStock, $columnCredit, $columnTk, $columnQuantity) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, [item.id, item.img, item.name, item.stock, item.credit, item.tk, quantity]);
+
+      print('Successfully inserted item with ID ${item.id}');
+    } else {
+      // If the item exists, update its quantity
+      await database.rawUpdate("""
+      UPDATE $table SET $columnQuantity = $columnQuantity + ? WHERE $columnId = ?
+    """, [quantity, item.id]);
+
+      print('Successfully updated quantity for item with ID ${item.id}');
+    }
   }
 
-  // All of the rows are returned as a list of maps, where each map is
-  // a key-value list of columns.
-  Future<List<Map<String, dynamic>>> queryAllRows() async {
-    Database database = await init();
-    return await database.query(table);
+
+  Future<bool> itemExistsInDatabase(Database database, String table, int itemId) async {
+    var result = await database.rawQuery("""
+    SELECT COUNT(*) FROM $table WHERE $columnId = ?
+  """, [itemId]);
+
+    int count = Sqflite.firstIntValue(result) ?? 0;
+    return count > 0;
   }
 
-  // All of the methods (insert, query, update, delete) can also be done using
-  // raw SQL commands. This method uses a raw query to give the row count.
-  Future<int> queryRowCount() async {
+
+  Future<int> getTotalQuantity() async {
     Database database = await init();
-    final results = await database.rawQuery('SELECT COUNT(*) FROM $table');
-    return Sqflite.firstIntValue(results) ?? 0;
+
+    var result = await database.rawQuery("""
+    SELECT SUM($columnQuantity) FROM $table
+  """);
+
+    int totalQuantity = Sqflite.firstIntValue(result) ?? 0;
+    return totalQuantity;
   }
 
-  // We are assuming here that the id column in the map is set. The other
-  // column values will be used to update the row.
-  Future<int> update(Map<String, dynamic> row) async {
+
+
+  Future<void> removeItemAndUpdateQuantity({required int itemId}) async {
     Database database = await init();
-    int id = row[columnId];
-    return await database.update(
-      table,
-      row,
-      where: '$columnId = ?',
-      whereArgs: [id],
-    );
+
+    var result = await database.rawQuery("""
+    SELECT $columnQuantity FROM $table WHERE $columnId = ?
+  """, [itemId]);
+
+    int currentQuantity = Sqflite.firstIntValue(result) ?? 0;
+
+    if (currentQuantity > 3) {
+      await database.rawDelete("""
+      DELETE FROM $table WHERE $columnId = ?
+    """, [itemId]);
+
+      print('Successfully removed item with ID $itemId from the database.');
+    } else {
+      await database.rawUpdate("""
+      UPDATE $table SET $columnQuantity = $columnQuantity - 1 WHERE $columnId = ?
+    """, [itemId]);
+
+      print('Successfully decreased quantity for item with ID $itemId.');
+    }
   }
 
-  // Deletes the row specified by the id. The number of affected rows is
-  // returned. This should be 1 as long as the row exists.
-  Future<int> delete(int id) async {
-    Database database = await init();
-    return await database.delete(
-      table,
-      where: '$columnId = ?',
-      whereArgs: [id],
-    );
-  }
+
+
+
 }

@@ -9,28 +9,30 @@ class CartItemLoadDataEvent extends CartItemEvent {
   List<Object?> get props => [];
 }
 
-/*class CartItemAddToCartEvent extends CartItemEvent {
+class CartItemAddToCartEvent extends CartItemEvent {
   final ShoppingItemModel itemModel;
+  final int index;
 
-  const CartItemAddToCartEvent({required this.itemModel});
+  const CartItemAddToCartEvent(
+      {required this.itemModel, required this.index});
 
   @override
   List<Object?> get props => [];
-}*/
+}
 
-class CartItemIncrementEvent extends CartItemEvent {
+/*class CartItemIncrementEvent extends CartItemEvent {
   final ShoppingItemModel itemModel;
 
   const CartItemIncrementEvent({required this.itemModel});
 
   @override
   List<Object?> get props => [];
-}
+}*/
 
-class CartItemDecrementEvent extends CartItemEvent {
-  final ShoppingItemModel itemModel;
+class CartItemRemoveEvent extends CartItemEvent {
+  final int index;
 
-  const CartItemDecrementEvent({required this.itemModel});
+  const CartItemRemoveEvent({required this.index});
 
   @override
   List<Object?> get props => [];

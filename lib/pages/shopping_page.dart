@@ -18,55 +18,76 @@ class _ShoppingPageState extends State<ShoppingPage> {
     context.read<CartItemBloc>().add(CartItemLoadDataEvent());
   }
 
-
   @override
   Widget build(BuildContext context) {
-    List<ShoppingItemModel> cartItems=[];
+    int mainCount = 0;
+    List<ShoppingItemModel> cartItems = [];
     context.read<CartItemBloc>().add(CartItemLoadDataEvent());
 
     return BlocConsumer<CartItemBloc, CartItemState>(
-      buildWhen: (previous, current) => previous != current && current is CartItemLoadedState,
+      buildWhen: (previous, current) =>
+          previous != current && current is CartItemLoadedState,
       listener: (context, stateListener) {
-        if(stateListener is CartItemLoadedState){
-          print(cartItems);
+        if (stateListener is CartItemLoadedState) {
           cartItems.addAll(stateListener.cartItem);
           print(cartItems);
         }
+
+        if (stateListener is CartItemUpdateState) {
+          if (stateListener.quantity >= 3) {
+            showDialog(
+              context: context,
+              builder: (_) => AlertDialog(
+                title: const Text('Cart Exceeded!'),
+                content: const Text(
+                    'You have taken maximum amount of item at once!'),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Close')),
+                ],
+              ),
+            );
+          }
+        }
       },
       builder: (context, stateBuilder) {
-        if(stateBuilder is CartItemLoadedState) {
+        if (stateBuilder is CartItemLoadedState) {
           return Scaffold(
-          appBar: AppBar(
-            title: const Text('Shopping'),
-            actions: [
-              BlocBuilder<CartItemBloc, CartItemState>(
-                builder: (context, itemState) {
-                  if (itemState is CartItemUpdateState) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Badge(
-                        label: Text(itemState.quantity.toString()),
-                        child: const Icon(Icons.add_shopping_cart),
-                      ),
-                    );
-                  } else {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Icon(Icons.add_shopping_cart),
-                    );
-                  }
-                },
-              ),
-            ],
-          ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: CustomScrollView(
-              slivers: [
-                SliverGrid(
-                  delegate: SliverChildBuilderDelegate(
-                        (context, index) =>
-                        Card(
+            appBar: AppBar(
+              title: const Text('Shopping'),
+              actions: [
+                BlocBuilder<CartItemBloc, CartItemState>(
+                  builder: (context, itemState) {
+                    if (itemState is CartItemUpdateState) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Badge(
+                          label: Text(itemState.quantity.toString()),
+                          child: const Icon(Icons.add_shopping_cart),
+                        ),
+                      );
+                    } else {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Icon(Icons.add_shopping_cart),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: CustomScrollView(
+                slivers: [
+                  SliverGrid(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        int childCount = 0;
+                        return Card(
                           color: Colors.white,
                           clipBehavior: Clip.hardEdge,
                           child: Column(
@@ -93,16 +114,13 @@ class _ShoppingPageState extends State<ShoppingPage> {
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-
                                       Text('Stock: ${cartItems[index].stock}'),
-
                                       Text('${cartItems[index].credit} Cr'),
-
                                       Text(
                                         '${cartItems[index].tk} tk',
                                         style: const TextStyle(
-                                          decoration: TextDecoration
-                                              .lineThrough,
+                                          decoration:
+                                              TextDecoration.lineThrough,
                                           fontSize: 12,
                                         ),
                                       ),
@@ -111,106 +129,128 @@ class _ShoppingPageState extends State<ShoppingPage> {
                                 ],
                               ),
                               const Spacer(),
+                              BlocBuilder<CartItemBloc, CartItemState>(
+                                builder: (context, state) {
+                                  if (state is CartItemUpdateState &&
+                                      state.index == index) {
+                                    return Container(
+                                      width: double.maxFinite,
+                                      padding: EdgeInsets.zero,
+                                      // color: Colors.green,
+                                      height: 40,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Material(
+                                            color: Colors.green,
+                                            child: InkWell(
+                                              onTap: () {
+                                                context
+                                                    .read<CartItemBloc>()
+                                                    .add(CartItemRemoveEvent(
+                                                        index: index));
 
-                              Material(
-                                color: Colors.lightBlue,
-                                child: InkWell(
-                                  onTap: () {
-                                    context.read<CartItemBloc>().add(
-                                        CartItemIncrementEvent(
-                                            itemModel: cartItems[index]));
-                                    print('Tapped at index = $index');
-                                  },
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    color: Colors.transparent,
-                                    height: 40,
-                                    width: double.maxFinite,
-                                    child: const Text(
-                                      'Add Cart',
-                                      style: TextStyle(color: Colors.white),
+                                                print('Current index = $index');
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(2),
+                                                color: Colors.transparent,
+                                                child: const Icon(
+                                                  Icons.remove,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Text(state.quantity.toString()),
+                                          // Text('0'),
+                                          Material(
+                                            color: Colors.green,
+                                            child: InkWell(
+                                              onTap: () {
+                                                childCount++;
+                                                mainCount = childCount;
+                                                context
+                                                    .read<CartItemBloc>()
+                                                    .add(CartItemAddToCartEvent(
+                                                      itemModel:
+                                                          cartItems[index],
+                                                      index: index,
+                                                    ));
+
+                                                print('Current index = $index');
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(2),
+                                                color: Colors.transparent,
+                                                child: const Icon(
+                                                  Icons.add,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                  return Material(
+                                    color: Colors.lightBlue,
+                                    child: InkWell(
+                                      onTap: () {
+                                        childCount++;
+                                        mainCount = childCount;
+                                        context
+                                            .read<CartItemBloc>()
+                                            .add(CartItemAddToCartEvent(
+                                              itemModel: cartItems[index],
+                                              index: index,
+                                            ));
+                                        print('Tapped at index = $index');
+                                      },
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        color: Colors.transparent,
+                                        height: 40,
+                                        width: double.maxFinite,
+                                        child: const Text(
+                                          'Add Cart',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
+                                  );
+                                },
                               ),
-
-                              /*Container(
-              width: double.maxFinite,
-              padding: EdgeInsets.zero,
-              // color: Colors.green,
-              height: 40,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Material(
-                color: Colors.green,
-                child: InkWell(
-                  onTap: () {
-                    context
-                        .read<CartItemBloc>()
-                        .add(CartItemDecrementEvent(
-                          itemModel: allItems[index],
-                        ));
-
-                    print('Current index = $index');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    color: Colors.transparent,
-                    child: const Icon(
-                      Icons.remove,
-                      color: Colors.white,
+                            ],
+                          ),
+                        );
+                      },
+                      childCount: cartItems.length,
                     ),
-                  ),
-                ),
-                  ),
-                  // Text(cartItemState.cartItem.length.toString()),
-                  Text('0'),
-                  Material(
-                color: Colors.green,
-                child: InkWell(
-                  onTap: () {
-                    context
-                        .read<CartItemBloc>()
-                        .add(CartItemIncrementEvent(
-                          itemModel: allItems[index],
-                        ));
-
-                    print('Current index = $index');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    color: Colors.transparent,
-                    child: const Icon(
-                      Icons.add,
-                      color: Colors.white,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 5,
+                      crossAxisSpacing: 5,
+                      mainAxisExtent: 290,
                     ),
-                  ),
-                ),
                   ),
                 ],
               ),
-            ),*/
-                            ],
-                          ),
-                        ),
-                    childCount: cartItems.length,
-                  ),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 5,
-                    crossAxisSpacing: 5,
-                    mainAxisExtent: 290,
-                  ),
-                ),
-              ],
             ),
-          ),
-        );
+          );
         }
 
-        return const Center(child: CircularProgressIndicator(color: Colors.red),);
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(color: Colors.red),
+          ),
+        );
       },
     );
   }
