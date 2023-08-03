@@ -112,11 +112,14 @@ class DbHelper {
     return items;
   }
 
-  Future<int> removeItemAndUpdateQuantity({required int itemId}) async {
+  Future<void> removeItemAndUpdateQuantity({required int itemId}) async {
     Database database = await init();
 
-    var result = await database.rawQuery("""
+    /*var result = await database.rawQuery("""
     SELECT $columnQuantity FROM $table WHERE $columnId = ?
+  """, [itemId]);*/
+    var result = await database.rawQuery("""
+    SELECT SUM($columnQuantity) FROM $table WHERE $columnId = ?
   """, [itemId]);
 
     int currentQuantity = Sqflite.firstIntValue(result) ?? 0;
@@ -134,7 +137,5 @@ class DbHelper {
 
       print('Successfully decreased quantity for item with ID $itemId.');
     }
-
-    return currentQuantity - 1;
   }
 }

@@ -9,16 +9,6 @@ class CartItemInitial extends CartItemState {
   List<Object> get props => [];
 }
 
-class CartItemLoadingState extends CartItemState {
-  @override
-  List<Object> get props => [];
-}
-
-class CartItemLoadedState extends CartItemState {
-  @override
-  List<Object> get props => [];
-}
-
 class CartItemUpdateState extends CartItemState {
   final int quantity;
   final List<int> dbItems;
