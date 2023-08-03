@@ -10,11 +10,11 @@ class CartItemLoadDataEvent extends CartItemEvent {
 }
 
 class CartItemAddToCartEvent extends CartItemEvent {
-  final ShoppingItemModel itemModel;
+  final ShoppingItemModel item;
   final int index;
 
   const CartItemAddToCartEvent(
-      {required this.itemModel, required this.index});
+      {required this.item, required this.index});
 
   @override
   List<Object?> get props => [];

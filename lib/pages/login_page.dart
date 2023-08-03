@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import '../bloc/cart_item/cart_item_bloc.dart';
 import '../bloc/login/login_bloc.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -30,6 +31,7 @@ class LoginPageState extends State<LoginPage> {
   initState() {
     super.initState();
     getDeviceInfo();
+    // context.read<CartItemBloc>().add(CartItemLoadDataEvent());
     userLoggedIn();
   }
 

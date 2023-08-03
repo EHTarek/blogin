@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:blogin/services/db_helper.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../data/model/shopping_item_model.dart';
 import '../../model/shopping_item_model.dart';
 
 part 'cart_item_event.dart';
@@ -14,27 +15,26 @@ class CartItemBloc extends Bloc<CartItemEvent, CartItemState> {
 
     on<CartItemLoadDataEvent>((event, emit) async {
       emit(CartItemLoadingState());
-      // Future.delayed(const Duration(microseconds: 500));
-      try {
-        await dbHelper.init();
 
-        emit(CartItemLoadedState(cartItem: ShoppingItemModel.shoppingItems));
-      } catch (e) {
-        print(e.toString());
-      }
+      try{
+        await dbHelper.init();
+        emit(CartItemLoadedState());
+      }catch(e){}
+
+
+
     });
 
     on<CartItemAddToCartEvent>((event, emit) async {
       emit(CartItemInitial());
-
       try {
         int totalQuantity = await dbHelper.getTotalQuantity();
-        if (totalQuantity < 4) {
-          await dbHelper.dbInsert(item: event.itemModel, quantity: 1);
-          List<int>dbItems = await dbHelper.getAllItems();
-          emit(CartItemUpdateState(
-              index: event.index, quantity: totalQuantity + 1,dbItems: dbItems));
-        }
+        await dbHelper.dbInsert(item: event.item);
+
+        List<int> dbItems = await dbHelper.getAllItems();
+
+        emit(
+            CartItemUpdateState(quantity: totalQuantity + 1, dbItems: dbItems));
       } catch (e) {
         print(e.toString());
       }
@@ -45,10 +45,8 @@ class CartItemBloc extends Bloc<CartItemEvent, CartItemState> {
       try {
         int quantity =
             await dbHelper.removeItemAndUpdateQuantity(itemId: event.index);
-        List<int>dbItems = await dbHelper.getAllItems();
-          emit(CartItemUpdateState(index: event.index, quantity: quantity,dbItems: dbItems));
-
-
+        List<int> dbItems = await dbHelper.getAllItems();
+        emit(CartItemUpdateState(quantity: quantity, dbItems: dbItems));
       } catch (e) {
         print(e.toString());
       }

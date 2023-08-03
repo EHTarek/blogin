@@ -1,7 +1,8 @@
-import 'package:blogin/model/shopping_item_model.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../data/model/shopping_item_model.dart';
 
 class DbHelper {
   static const int version = 1;
@@ -45,9 +46,9 @@ class DbHelper {
           ) """);
   }
 
-  Future<void> dbInsert(
-      {required ShoppingItemModel item, required int quantity}) async {
+  Future<void> dbInsert({required ShoppingItemModel item}) async {
     Database database = await init();
+    int quantity = 1;
 
     bool itemExists = await _itemExistsInDatabase(database, table, item.id);
 
