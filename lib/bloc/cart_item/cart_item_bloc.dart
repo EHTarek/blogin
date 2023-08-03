@@ -29,10 +29,11 @@ class CartItemBloc extends Bloc<CartItemEvent, CartItemState> {
 
       try {
         int totalQuantity = await dbHelper.getTotalQuantity();
-        if (totalQuantity <= 4) {
-          dbHelper.dbInsert(item: event.itemModel, quantity: 1);
+        if (totalQuantity < 4) {
+          await dbHelper.dbInsert(item: event.itemModel, quantity: 1);
+          List<int>dbItems = await dbHelper.getAllItems();
           emit(CartItemUpdateState(
-              index: event.index, quantity: totalQuantity + 1));
+              index: event.index, quantity: totalQuantity + 1,dbItems: dbItems));
         }
       } catch (e) {
         print(e.toString());
@@ -40,15 +41,14 @@ class CartItemBloc extends Bloc<CartItemEvent, CartItemState> {
     });
 
     on<CartItemRemoveEvent>((event, emit) async {
-      // emit(CartItemInitial());
+      emit(CartItemInitial());
       try {
-        int totalQuantity = await dbHelper.getTotalQuantity();
-        if (totalQuantity >= 1) {
-          dbHelper.removeItemAndUpdateQuantity(itemId: event.index);
-          emit(CartItemUpdateState(
-              index: event.index, quantity: totalQuantity - 1));
-        }
-        emit(CartItemInitial());
+        int quantity =
+            await dbHelper.removeItemAndUpdateQuantity(itemId: event.index);
+        List<int>dbItems = await dbHelper.getAllItems();
+          emit(CartItemUpdateState(index: event.index, quantity: quantity,dbItems: dbItems));
+
+
       } catch (e) {
         print(e.toString());
       }

@@ -45,18 +45,26 @@ class DbHelper {
           ) """);
   }
 
-
-  Future<void> dbInsert({required ShoppingItemModel item, required int quantity}) async {
+  Future<void> dbInsert(
+      {required ShoppingItemModel item, required int quantity}) async {
     Database database = await init();
 
-    bool itemExists = await itemExistsInDatabase(database, table, item.id);
+    bool itemExists = await _itemExistsInDatabase(database, table, item.id);
 
     if (!itemExists) {
       // If the item does not exist, insert a new row
       await database.rawInsert("""
       INSERT INTO $table ($columnId, $columnImg, $columnName, $columnStock, $columnCredit, $columnTk, $columnQuantity) 
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    """, [item.id, item.img, item.name, item.stock, item.credit, item.tk, quantity]);
+    """, [
+        item.id,
+        item.img,
+        item.name,
+        item.stock,
+        item.credit,
+        item.tk,
+        quantity
+      ]);
 
       print('Successfully inserted item with ID ${item.id}');
     } else {
@@ -69,8 +77,8 @@ class DbHelper {
     }
   }
 
-
-  Future<bool> itemExistsInDatabase(Database database, String table, int itemId) async {
+  Future<bool> _itemExistsInDatabase(
+      Database database, String table, int itemId) async {
     var result = await database.rawQuery("""
     SELECT COUNT(*) FROM $table WHERE $columnId = ?
   """, [itemId]);
@@ -78,7 +86,6 @@ class DbHelper {
     int count = Sqflite.firstIntValue(result) ?? 0;
     return count > 0;
   }
-
 
   Future<int> getTotalQuantity() async {
     Database database = await init();
@@ -91,9 +98,20 @@ class DbHelper {
     return totalQuantity;
   }
 
+  Future getAllItems() async {
+    Database database = await init();
 
+    var result = await database.rawQuery("""
+    SELECT $columnId FROM $table
+  """);
+    List<int> items = [];
+    result.forEach((element) {
+      items.add(int.parse(element['id'].toString()));
+    });
+    return items;
+  }
 
-  Future<void> removeItemAndUpdateQuantity({required int itemId}) async {
+  Future<int> removeItemAndUpdateQuantity({required int itemId}) async {
     Database database = await init();
 
     var result = await database.rawQuery("""
@@ -102,7 +120,7 @@ class DbHelper {
 
     int currentQuantity = Sqflite.firstIntValue(result) ?? 0;
 
-    if (currentQuantity > 3) {
+    if (currentQuantity == 1) {
       await database.rawDelete("""
       DELETE FROM $table WHERE $columnId = ?
     """, [itemId]);
@@ -115,9 +133,7 @@ class DbHelper {
 
       print('Successfully decreased quantity for item with ID $itemId.');
     }
+
+    return currentQuantity - 1;
   }
-
-
-
-
 }

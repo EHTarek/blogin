@@ -20,7 +20,6 @@ class _ShoppingPageState extends State<ShoppingPage> {
 
   @override
   Widget build(BuildContext context) {
-    int mainCount = 0;
     List<ShoppingItemModel> cartItems = [];
     context.read<CartItemBloc>().add(CartItemLoadDataEvent());
 
@@ -34,7 +33,7 @@ class _ShoppingPageState extends State<ShoppingPage> {
         }
 
         if (stateListener is CartItemUpdateState) {
-          if (stateListener.quantity >= 3) {
+          if (stateListener.quantity > 3) {
             showDialog(
               context: context,
               builder: (_) => AlertDialog(
@@ -60,6 +59,7 @@ class _ShoppingPageState extends State<ShoppingPage> {
               title: const Text('Shopping'),
               actions: [
                 BlocBuilder<CartItemBloc, CartItemState>(
+                  buildWhen: (previous, current) => current is CartItemUpdateState,
                   builder: (context, itemState) {
                     if (itemState is CartItemUpdateState) {
                       return Padding(
@@ -86,7 +86,6 @@ class _ShoppingPageState extends State<ShoppingPage> {
                   SliverGrid(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        int childCount = 0;
                         return Card(
                           color: Colors.white,
                           clipBehavior: Clip.hardEdge,
@@ -128,11 +127,12 @@ class _ShoppingPageState extends State<ShoppingPage> {
                                   ),
                                 ],
                               ),
-                              const Spacer(),
+                              // const Spacer(),
                               BlocBuilder<CartItemBloc, CartItemState>(
                                 builder: (context, state) {
                                   if (state is CartItemUpdateState &&
-                                      state.index == index) {
+                                      state.index == index &&
+                                      state.quantity > 0) {
                                     return Container(
                                       width: double.maxFinite,
                                       padding: EdgeInsets.zero,
@@ -171,8 +171,6 @@ class _ShoppingPageState extends State<ShoppingPage> {
                                             color: Colors.green,
                                             child: InkWell(
                                               onTap: () {
-                                                childCount++;
-                                                mainCount = childCount;
                                                 context
                                                     .read<CartItemBloc>()
                                                     .add(CartItemAddToCartEvent(
@@ -198,12 +196,11 @@ class _ShoppingPageState extends State<ShoppingPage> {
                                       ),
                                     );
                                   }
-                                  return Material(
+                                  if(state is CartItemUpdateState && index == state.dbItems.contains(index)) {
+                                    return Material(
                                     color: Colors.lightBlue,
                                     child: InkWell(
                                       onTap: () {
-                                        childCount++;
-                                        mainCount = childCount;
                                         context
                                             .read<CartItemBloc>()
                                             .add(CartItemAddToCartEvent(
@@ -224,6 +221,8 @@ class _ShoppingPageState extends State<ShoppingPage> {
                                       ),
                                     ),
                                   );
+                                  }
+                                  return const Spacer();
                                 },
                               ),
                             ],

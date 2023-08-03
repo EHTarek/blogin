@@ -23,20 +23,11 @@ class CartItemLoadedState extends CartItemState {
   List<Object> get props => [];
 }
 
-/*class CartItemSingleState extends CartItemState {
-  final int index;
-  final int quantity;
-  const CartItemSingleState({required this.index, required this.quantity});
-
-  @override
-  List<Object> get props => [];
-}*/
-
-
 class CartItemUpdateState extends CartItemState {
   final int index;
   final int quantity;
-  const CartItemUpdateState({required this.index, required this.quantity});
+  final List<int> dbItems;
+  const CartItemUpdateState({required this.index, required this.quantity, required this.dbItems});
 
   @override
   List<Object> get props => [];
