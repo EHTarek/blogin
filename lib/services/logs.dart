@@ -1,5 +1,4 @@
 import 'package:logger/logger.dart';
-import 'dart:io' as io;
 
 dynamic Log(dynamic log) {
   var logger = Logger(

@@ -1,5 +1,8 @@
+import 'package:blogin/data/model/shopping_item_model.dart';
 import 'package:blogin/navigation/routes.dart';
+import 'package:blogin/pages/checkout_page.dart';
 import 'package:blogin/pages/home_page.dart';
+import 'package:blogin/pages/item_detail_page.dart';
 import 'package:blogin/pages/login_page.dart';
 import 'package:blogin/pages/message_page.dart';
 import 'package:blogin/pages/shopping_page.dart';
@@ -21,12 +24,25 @@ class RouteGenerator {
           );*/
 
       case Routes.kHome:
-        return MaterialPageRoute(builder: (_) => const HomePage());
+        return MaterialPageRoute(
+          builder: (_) => const HomePage(),
+        );
       case Routes.kMessage:
-        return MaterialPageRoute(builder: (_) => const MessagePage());
+        return MaterialPageRoute(
+          builder: (_) => const MessagePage(),
+        );
       case Routes.kShopping:
-        return MaterialPageRoute(builder: (_) => ShoppingPage());
-
+        return MaterialPageRoute(
+          builder: (_) => ShoppingPage(),
+        );
+      case Routes.kItemDetail:
+        return MaterialPageRoute(
+          builder: (_) => ItemDetailPage(item: args as ShoppingItemModel),
+        );
+      case Routes.kCheckout:
+        return MaterialPageRoute(
+          builder: (_) => CheckoutPage(checkoutItemId: args as List<dynamic>),
+        );
       default:
         return _errorRoute();
     }

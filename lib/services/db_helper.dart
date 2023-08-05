@@ -50,9 +50,11 @@ class DbHelper {
     Database database = await init();
     int quantity = 1;
 
-    bool itemExists = await _itemExistsInDatabase(database, table, item.id);
 
-    if (!itemExists) {
+    bool itemExists = await _itemExistsInDatabase(database, table, item.id);
+    int totalQuantity = await getTotalQuantity();
+
+    if (!itemExists && totalQuantity<3) {
       // If the item does not exist, insert a new row
       await database.rawInsert("""
       INSERT INTO $table ($columnId, $columnImg, $columnName, $columnStock, $columnCredit, $columnTk, $columnQuantity) 
@@ -68,7 +70,7 @@ class DbHelper {
       ]);
 
       print('Successfully inserted item with ID ${item.id}');
-    } else {
+    } else if(totalQuantity<3){
       // If the item exists, update its quantity
       await database.rawUpdate("""
       UPDATE $table SET $columnQuantity = $columnQuantity + ? WHERE $columnId = ?
@@ -99,7 +101,28 @@ class DbHelper {
     return totalQuantity;
   }
 
-  Future getAllItems() async {
+  Future<Map<int, int>> getIdQuantityMap() async {
+    Database database = await init();
+
+    var result = await database.rawQuery("""
+    SELECT $columnId, $columnQuantity FROM $table
+  """);
+
+    Map<int, int> idQuantityMap = {};
+
+    if (result.isNotEmpty) {
+      for (var row in result) {
+        int itemId = row[columnId] as int;
+        int quantity = row[columnQuantity] as int;
+        idQuantityMap[itemId] = quantity;
+      }
+    }
+
+    return idQuantityMap;
+  }
+
+
+  Future<List<int>> getAllItems() async {
     Database database = await init();
 
     var result = await database.rawQuery("""
@@ -115,9 +138,6 @@ class DbHelper {
   Future<void> removeItemAndUpdateQuantity({required int itemId}) async {
     Database database = await init();
 
-    /*var result = await database.rawQuery("""
-    SELECT $columnQuantity FROM $table WHERE $columnId = ?
-  """, [itemId]);*/
     var result = await database.rawQuery("""
     SELECT SUM($columnQuantity) FROM $table WHERE $columnId = ?
   """, [itemId]);

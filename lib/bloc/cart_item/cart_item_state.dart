@@ -12,8 +12,9 @@ class CartItemInitial extends CartItemState {
 class CartItemUpdateState extends CartItemState {
   final int quantity;
   final List<int> dbItems;
+  final Map<int, int> idQuantityMap;
 
-  const CartItemUpdateState({required this.quantity, required this.dbItems});
+  const CartItemUpdateState({required this.idQuantityMap, required this.quantity, required this.dbItems});
 
   @override
   List<Object> get props => [];

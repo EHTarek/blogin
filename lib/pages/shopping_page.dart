@@ -1,4 +1,5 @@
 import 'package:blogin/data/repository/shopping_item_repo.dart';
+import 'package:blogin/navigation/routes.dart';
 import 'package:blogin/services/logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,18 +21,28 @@ class ShoppingPage extends StatelessWidget {
           BlocBuilder<CartItemBloc, CartItemState>(
             buildWhen: (previous, current) => current is CartItemUpdateState,
             builder: (context, itemState) {
-              if (itemState is CartItemUpdateState && itemState.quantity>0) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Badge(
-                    label: Text(itemState.quantity.toString()),
-                    child: const Icon(Icons.add_shopping_cart),
+              if (itemState is CartItemUpdateState && itemState.quantity > 0) {
+                return InkWell(
+                  onTap: (){
+                    Navigator.pushNamed(context, Routes.kCheckout, arguments: itemState.dbItems);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Badge(
+                      label: Text(itemState.quantity.toString()),
+                      child: const Icon(Icons.add_shopping_cart),
+                    ),
                   ),
                 );
               }
-              return const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: Icon(Icons.add_shopping_cart),
+              return InkWell(
+                onTap: (){
+                  Navigator.pushNamed(context, Routes.kCheckout, arguments: []);
+                },
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Icon(Icons.add_shopping_cart),
+                ),
               );
             },
           ),
@@ -44,48 +55,56 @@ class ShoppingPage extends StatelessWidget {
             SliverGrid(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  int itemCount = 0;
                   return Card(
                     color: Colors.white,
                     clipBehavior: Clip.hardEdge,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              height: 100,
-                              width: double.maxFinite,
-                              child: Image.network(
-                                shoppingItemRepo.shoppingItems[index].img,
-                                fit: BoxFit.cover,
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              Routes.kItemDetail,
+                              arguments: shoppingItemRepo.shoppingItems[index],
+                            );
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                height: 100,
+                                width: double.maxFinite,
+                                child: Image.network(
+                                  shoppingItemRepo.shoppingItems[index].img,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Divider(color: Colors.black38),
-                                Text(
-                                  shoppingItemRepo.shoppingItems[index].name,
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                    'Stock: ${shoppingItemRepo.shoppingItems[index].stock}'),
-                                Text(
-                                    '${shoppingItemRepo.shoppingItems[index].credit} Cr'),
-                                Text(
-                                  '${shoppingItemRepo.shoppingItems[index].tk} tk',
-                                  style: const TextStyle(
-                                    decoration: TextDecoration.lineThrough,
-                                    fontSize: 12,
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Divider(color: Colors.black38),
+                                  Text(
+                                    shoppingItemRepo.shoppingItems[index].name,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                  Text(
+                                      'Stock: ${shoppingItemRepo.shoppingItems[index].stock}'),
+                                  Text(
+                                      '${shoppingItemRepo.shoppingItems[index].credit} Cr'),
+                                  Text(
+                                    '${shoppingItemRepo.shoppingItems[index].tk} tk',
+                                    style: const TextStyle(
+                                      decoration: TextDecoration.lineThrough,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                         const Spacer(),
                         BlocBuilder<CartItemBloc, CartItemState>(
@@ -93,6 +112,7 @@ class ShoppingPage extends StatelessWidget {
                             if (addState is CartItemUpdateState &&
                                 addState.dbItems.contains(index)) {
                               return Container(
+                                // color: Colors.lightBlue,
                                 width: double.maxFinite,
                                 padding: EdgeInsets.zero,
                                 // color: Colors.green,
@@ -103,11 +123,10 @@ class ShoppingPage extends StatelessWidget {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     Material(
-                                      color: Colors.green,
+                                      color: Colors.lightBlue,
                                       child: InkWell(
                                         onTap: () {
                                           mainCount--;
-                                          itemCount--;
                                           context.read<CartItemBloc>().add(
                                               CartItemRemoveEvent(
                                                   index: index));
@@ -124,22 +143,19 @@ class ShoppingPage extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    Text(itemCount.toString()),
-                                    // Text('0'),
+                                    Text(addState.idQuantityMap[index]
+                                        .toString()),
                                     Material(
-                                      color: Colors.green,
+                                      color: Colors.lightBlue,
                                       child: InkWell(
                                         onTap: addState.quantity < 3
                                             ? () {
                                                 mainCount++;
-                                                itemCount++;
                                                 context
                                                     .read<CartItemBloc>()
-                                                    .add(
-                                                        CartItemAddToCartEvent(
+                                                    .add(CartItemAddToCartEvent(
                                                       item: shoppingItemRepo
-                                                              .shoppingItems[
-                                                          index],
+                                                          .shoppingItems[index],
                                                       index: index,
                                                     ));
 
@@ -147,9 +163,12 @@ class ShoppingPage extends StatelessWidget {
                                               }
                                             : () {
                                                 ScaffoldMessenger.of(context)
-                                                    .showSnackBar(const SnackBar(
-                                                        content: Text(
-                                                            'Maximum cart item exceeded!')));
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                        'Maximum cart item exceeded!'),
+                                                  ),
+                                                );
                                               },
                                         child: Container(
                                           padding: const EdgeInsets.all(2),
@@ -173,7 +192,7 @@ class ShoppingPage extends StatelessWidget {
                                     ? () {
                                         Log('MainCount: $mainCount');
                                         mainCount++;
-                                        itemCount++;
+
                                         context
                                             .read<CartItemBloc>()
                                             .add(CartItemAddToCartEvent(
