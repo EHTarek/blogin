@@ -41,7 +41,7 @@ class RouteGenerator {
         );
       case Routes.kCheckout:
         return MaterialPageRoute(
-          builder: (_) => CheckoutPage(checkoutItemId: args as List<dynamic>),
+          builder: (_) => CheckoutPage(),
         );
       default:
         return _errorRoute();

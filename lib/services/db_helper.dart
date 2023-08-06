@@ -25,8 +25,8 @@ class DbHelper {
     Database database = await openDatabase(
       path,
       version: version,
-      onConfigure: (db) {
-        db.delete(table);
+      onConfigure: (db) async {
+       await db.delete(table);
       },
       onCreate: _onCreate,
     );

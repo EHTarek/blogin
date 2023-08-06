@@ -9,11 +9,11 @@ class ShoppingPage extends StatelessWidget {
   ShoppingPage({super.key});
 
   final ShoppingItemRepo shoppingItemRepo = ShoppingItemRepo();
-
+  static int mainCount = 0;
   @override
   Widget build(BuildContext context) {
     print('Inside build');
-    int mainCount = 0;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping'),
@@ -24,7 +24,7 @@ class ShoppingPage extends StatelessWidget {
               if (itemState is CartItemUpdateState && itemState.quantity > 0) {
                 return InkWell(
                   onTap: (){
-                    Navigator.pushNamed(context, Routes.kCheckout, arguments: itemState.dbItems);
+                    Navigator.pushNamed(context, Routes.kCheckout);
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -37,7 +37,7 @@ class ShoppingPage extends StatelessWidget {
               }
               return InkWell(
                 onTap: (){
-                  Navigator.pushNamed(context, Routes.kCheckout, arguments: []);
+                  Navigator.pushNamed(context, Routes.kCheckout);
                 },
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),

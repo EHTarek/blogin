@@ -1,5 +1,6 @@
 import 'package:blogin/data/model/shopping_item_model.dart';
 import 'package:blogin/navigation/routes.dart';
+import 'package:blogin/pages/shopping_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,14 +11,9 @@ class ItemDetailPage extends StatelessWidget {
   const ItemDetailPage({super.key, required this.item});
 
  final ShoppingItemModel item;
-  // String sItem,sMainCount,sItemCount;
-
- // final Map<String, dynamic> singleItem;
-
   @override
   Widget build(BuildContext context) {
 
-    int mainCount =  0;
     return Scaffold(
       appBar: AppBar(
         title: Text(item.name, overflow: TextOverflow.ellipsis),
@@ -28,7 +24,7 @@ class ItemDetailPage extends StatelessWidget {
               if (itemState is CartItemUpdateState && itemState.quantity > 0) {
                 return InkWell(
                   onTap: (){
-                    Navigator.pushNamed(context, Routes.kCheckout,arguments: itemState.dbItems);
+                    Navigator.pushNamed(context, Routes.kCheckout);
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -41,7 +37,7 @@ class ItemDetailPage extends StatelessWidget {
               }
               return InkWell(
                 onTap: (){
-                  Navigator.pushNamed(context, Routes.kCheckout,arguments: []);
+                  Navigator.pushNamed(context, Routes.kCheckout);
                 },
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
@@ -87,7 +83,7 @@ class ItemDetailPage extends StatelessWidget {
                           color: Colors.lightBlue,
                           child: InkWell(
                             onTap: () {
-                              mainCount--;
+                              ShoppingPage.mainCount--;
                               context.read<CartItemBloc>().add(
                                   CartItemRemoveEvent(
                                       index: item.id));
@@ -111,7 +107,7 @@ class ItemDetailPage extends StatelessWidget {
                           child: InkWell(
                             onTap: addState.quantity < 3
                                 ? () {
-                              mainCount++;
+                              ShoppingPage.mainCount++;
                               context
                                   .read<CartItemBloc>()
                                   .add(
@@ -146,10 +142,10 @@ class ItemDetailPage extends StatelessWidget {
                 return Material(
                   color: Colors.lightBlue,
                   child: InkWell(
-                    onTap: mainCount < 3
+                    onTap: ShoppingPage.mainCount < 3
                         ? () {
-                      Log('MainCount: $mainCount');
-                      mainCount++;
+                      Log('MainCount: $ShoppingPage.mainCount');
+                      ShoppingPage.mainCount++;
                       context
                           .read<CartItemBloc>()
                           .add(CartItemAddToCartEvent(
@@ -159,7 +155,7 @@ class ItemDetailPage extends StatelessWidget {
                       Log('Tapped at index = ${item.id}');
                     }
                         : () {
-                      Log('MainCount: $mainCount');
+                      Log('MainCount: $ShoppingPage.mainCount');
                       ScaffoldMessenger.of(context)
                           .showSnackBar(const SnackBar(
                           content: Text(
