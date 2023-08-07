@@ -5,6 +5,7 @@ import 'package:blogin/pages/home_page.dart';
 import 'package:blogin/pages/item_detail_page.dart';
 import 'package:blogin/pages/login_page.dart';
 import 'package:blogin/pages/message_page.dart';
+import 'package:blogin/pages/mqtt_page.dart';
 import 'package:blogin/pages/shopping_page.dart';
 import 'package:flutter/material.dart';
 
@@ -42,6 +43,10 @@ class RouteGenerator {
       case Routes.kCheckout:
         return MaterialPageRoute(
           builder: (_) => CheckoutPage(),
+        );
+      case Routes.kMqttPage:
+        return MaterialPageRoute(
+          builder: (_) => MqttPage(),
         );
       default:
         return _errorRoute();

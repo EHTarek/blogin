@@ -1,3 +1,4 @@
+import 'package:blogin/bloc/mqtt_bloc/mqtt_bloc.dart';
 import 'package:blogin/data/repository/shopping_item_repo.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:blogin/services/logs.dart';
@@ -10,6 +11,7 @@ class ShoppingPage extends StatelessWidget {
 
   final ShoppingItemRepo shoppingItemRepo = ShoppingItemRepo();
   static int mainCount = 0;
+
   @override
   Widget build(BuildContext context) {
     print('Inside build');
@@ -18,12 +20,19 @@ class ShoppingPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Shopping'),
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, Routes.kMqttPage);
+              context.read<MqttBloc>().add(MqttInitializeEvent());
+            },
+            icon: const Icon(Icons.app_shortcut_sharp),
+          ),
           BlocBuilder<CartItemBloc, CartItemState>(
             buildWhen: (previous, current) => current is CartItemUpdateState,
             builder: (context, itemState) {
               if (itemState is CartItemUpdateState && itemState.quantity > 0) {
                 return InkWell(
-                  onTap: (){
+                  onTap: () {
                     Navigator.pushNamed(context, Routes.kCheckout);
                   },
                   child: Padding(
@@ -36,7 +45,7 @@ class ShoppingPage extends StatelessWidget {
                 );
               }
               return InkWell(
-                onTap: (){
+                onTap: () {
                   Navigator.pushNamed(context, Routes.kCheckout);
                 },
                 child: const Padding(

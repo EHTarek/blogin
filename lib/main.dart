@@ -1,6 +1,7 @@
 import 'package:blogin/app_observer.dart';
 import 'package:blogin/bloc/cart_item/cart_item_bloc.dart';
 import 'package:blogin/bloc/message/message_bloc.dart';
+import 'package:blogin/bloc/mqtt_bloc/mqtt_bloc.dart';
 import 'package:blogin/navigation/route_generator.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,9 @@ class LoginApp extends StatelessWidget {
         ),
         BlocProvider<CartItemBloc>(
           create: (context) => CartItemBloc(),
+        ),
+        BlocProvider<MqttBloc>(
+          create: (context) => MqttBloc(),
         ),
       ],
       child: MaterialApp(
