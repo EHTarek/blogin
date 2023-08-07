@@ -14,10 +14,12 @@ enum MqttCurrentConnectionState {
 enum MqttSubscriptionState { IDLE, SUBSCRIBED }
 
 class MQTTClientService {
-  MqttServerClient client = MqttServerClient.withPort(
-      '36c24cffe29749baa0e3f6b7a8103f04.s2.eu.hivemq.cloud',
-      '36c24cffe29749baa0e3f6b7a8103f04',
-      8883);
+  // MqttServerClient client = MqttServerClient.withPort(
+  //     '36c24cffe29749baa0e3f6b7a8103f04.s2.eu.hivemq.cloud',
+  //     '36c24cffe29749baa0e3f6b7a8103f04',
+  //     8883);
+
+  late MqttServerClient client;
 
   MqttCurrentConnectionState connectionState = MqttCurrentConnectionState.IDLE;
   MqttSubscriptionState subscriptionState = MqttSubscriptionState.IDLE;
