@@ -31,7 +31,7 @@ class LoginPageState extends State<LoginPage> {
   initState() {
     super.initState();
     getDeviceInfo();
-    // context.read<CartItemBloc>().add(CartItemLoadDataEvent());
+    // context.re,ad<CartItemBloc>().add(CartItemLoadDataEvent());
     userLoggedIn();
   }
 

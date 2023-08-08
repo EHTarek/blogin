@@ -23,7 +23,7 @@ class ShoppingPage extends StatelessWidget {
           IconButton(
             onPressed: () {
               Navigator.pushNamed(context, Routes.kMqttPage);
-              context.read<MqttBloc>().add(MqttInitializeEvent());
+              // context.read<MqttBloc>().add(MqttInitializeEvent());
             },
             icon: const Icon(Icons.app_shortcut_sharp),
           ),

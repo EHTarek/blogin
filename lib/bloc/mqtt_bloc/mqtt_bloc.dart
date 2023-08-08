@@ -11,11 +11,11 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
   MqttBloc() : super(MqttInitial()) {
 
     on<MqttInitializeEvent>((event, emit) async {
-      await MQTTClientService().prepareMqttClient();
+      // await MQTTClientService().prepareMqttClient();
     });
 
     on<MqttSendMessageEvent>((event, emit) {
-      MQTTClientService().sendMessage(event.msg);
+      // MQTTClientService().sendMessage(event.msg);
     });
   }
 }
