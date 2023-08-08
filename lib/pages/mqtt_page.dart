@@ -84,12 +84,12 @@ class _MqttPageState extends State<MqttPage> {
                     Expanded(
                       flex: 3,
                       child: ElevatedButton(
-                        onPressed: () async {
-                          await myMqttService.mqttConnect(
-                              username: usernameController.text,
-                              password: passwordController.text,
-                              topic: topicController.text);
-
+                        onPressed: () {
+                          context.read<MqttBloc>().add(MqttInitializeEvent(
+                                username: usernameController.text,
+                                password: passwordController.text,
+                                topic: topicController.text,
+                              ));
                           showStream = true;
                           setState(() {});
                         },
@@ -101,36 +101,37 @@ class _MqttPageState extends State<MqttPage> {
               ),
               const SizedBox(height: 24),
               if (showStream)
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: TextFormField(
-                      focusNode: focusNode,
-                      maxLines: 3,
-                      controller: msgController,
-                      decoration: const InputDecoration(
-                        contentPadding:
-                        EdgeInsets.symmetric(horizontal: 4),
-                        labelText: 'Message',
-                        hintText: 'Message',
-                        border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: TextFormField(
+                        focusNode: focusNode,
+                        maxLines: 3,
+                        controller: msgController,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 4),
+                          labelText: 'Message',
+                          hintText: 'Message',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: () async {
-                      // context.read<MqttBloc>().add(MqttSendMessageEvent(msg: msgController.text));
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () async {
+                        context.read<MqttBloc>().add(
+                              MqttSendMessageEvent(message: msgController.text),
+                            );
 
-                      myMqttService.sendMessage(msgController.text);
-                      msgController.clear();
-                      focusNode.unfocus();
-                    },
-                    child: const Text('Send'),
-                  ),
-                ],
-              ),
+                        // myMqttService.sendMessage(msgController.text);
+                        msgController.clear();
+                        focusNode.unfocus();
+                      },
+                      child: const Text('Send'),
+                    ),
+                  ],
+                ),
               const SizedBox(height: 24),
               if (showStream)
                 StreamBuilder<String>(

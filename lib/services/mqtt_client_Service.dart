@@ -5,7 +5,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 class MQTTClientService {
-   MqttServerClient client = MqttServerClient.withPort(
+  MqttServerClient client = MqttServerClient.withPort(
       '36c24cffe29749baa0e3f6b7a8103f04.s2.eu.hivemq.cloud',
       '36c24cffe29749baa0e3f6b7a8103f04',
       8883);
@@ -19,10 +19,11 @@ class MQTTClientService {
     _subscribeToTopic('flutter_test');
     // _publishMessage(msg);
   }*/
-  Future<void> mqttConnect (
-      {required String username,
-      required String password,
-      required String topic}) async {
+  Future<void> mqttConnect({
+    required String username,
+    required String password,
+    required String topic,
+  }) async {
     _setupMqttClient();
     await _connectClient(username, password);
     _subscribeToTopic(topic);
@@ -70,7 +71,7 @@ class MQTTClientService {
     });*/
   }
 
- /* receiveTopicMessage() {
+  /* receiveTopicMessage() {
     // print the message when it is received
     String message = 'msg';
     return client.updates?.listen((List<MqttReceivedMessage<MqttMessage>> c) {
@@ -79,26 +80,27 @@ class MQTTClientService {
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
       print(message);
     });
-    *//*print(message);
-    return message;*//*
+    */ /*print(message);
+    return message;*/ /*
   }*/
 
   Stream<String> receiveTopicMessage() {
     // Create a StreamController to manage the stream of messages
-    final StreamController<String> messageStreamController = StreamController<String>();
+    final StreamController<String> messageStreamController =
+        StreamController<String>();
 
     // Listen to MQTT updates and add received messages to the stream
     client.updates?.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage recMess = c[0].payload as MqttPublishMessage;
-      String message = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-      print(message);
-      messageStreamController.add(message); // Add the received message to the stream
+      String message =
+          MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+      messageStreamController
+          .add(message); // Add the received message to the stream
     });
 
     // Return the stream from the StreamController
     return messageStreamController.stream;
   }
-
 
   void _publishMessage(String message) {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();

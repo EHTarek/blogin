@@ -5,15 +5,22 @@ abstract class MqttEvent extends Equatable {
 }
 
 class MqttInitializeEvent extends MqttEvent {
+  final String username, password, topic;
+
+  const MqttInitializeEvent({
+    required this.username,
+    required this.password,
+    required this.topic,
+  });
+
   @override
   List<Object?> get props => [];
 }
 
-
 class MqttSendMessageEvent extends MqttEvent {
-  final String msg;
+  final String message;
 
-  const MqttSendMessageEvent({required this.msg});
+  const MqttSendMessageEvent({required this.message});
 
   @override
   List<Object?> get props => [];
