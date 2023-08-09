@@ -24,7 +24,6 @@ class _MqttPageState extends State<MqttPage> {
 
   final MQTTClientService myMqttService = MQTTClientService();
   List<String> topicMessage = [];
-  bool showStream = false;
   FocusNode focusNode = FocusNode();
 
   @override
@@ -32,139 +31,191 @@ class _MqttPageState extends State<MqttPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('MQTT'),
+        actions: [
+          BlocBuilder<MqttBloc, MqttState>(
+            builder: (context, connState) {
+              if (connState is MqttMessageUpdateState) {
+                return IconButton(
+                  onPressed: () {
+                    context.read<MqttBloc>().add(MqttDisconnectEvent());
+                  },
+                  icon: const Icon(
+                    Icons.stop_circle_outlined,
+                    color: Colors.red,
+                  ),
+                );
+              }
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(
+                  Icons.stop_circle_outlined,
+                  color: Colors.grey,
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              SizedBox(
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 6,
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: usernameController,
-                            decoration: const InputDecoration(
-                              contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 4),
-                              labelText: 'Username',
-                              hintText: 'Username',
-                              border: OutlineInputBorder(),
+              BlocBuilder<MqttBloc, MqttState>(
+                builder: (context, mqttConnState) {
+                  if (mqttConnState is MqttMessageUpdateState) {
+                    return Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: TextFormField(
+                                focusNode: focusNode,
+                                maxLines: 3,
+                                controller: msgController,
+                                decoration: const InputDecoration(
+                                  contentPadding:
+                                      EdgeInsets.symmetric(horizontal: 4),
+                                  labelText: 'Message',
+                                  hintText: 'Message',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: passwordController,
-                            decoration: const InputDecoration(
-                              contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 4),
-                              labelText: 'Password',
-                              hintText: 'Password',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: topicController,
-                            decoration: const InputDecoration(
-                              contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 4),
-                              labelText: 'Topic',
-                              hintText: 'Topic',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      flex: 3,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          context.read<MqttBloc>().add(MqttInitializeEvent(
-                                username: usernameController.text,
-                                password: passwordController.text,
-                                topic: topicController.text,
-                              ));
-                          showStream = true;
-                          setState(() {});
-                        },
-                        child: const Text('Connect'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              if (showStream)
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: TextFormField(
-                        focusNode: focusNode,
-                        maxLines: 3,
-                        controller: msgController,
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 4),
-                          labelText: 'Message',
-                          hintText: 'Message',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: () async {
-                        context.read<MqttBloc>().add(
-                              MqttSendMessageEvent(message: msgController.text),
-                            );
+                            const SizedBox(width: 8),
+                            ElevatedButton(
+                              onPressed: () async {
+                                context.read<MqttBloc>().add(
+                                      MqttSendMessageEvent(
+                                          message: msgController.text),
+                                    );
 
-                        // myMqttService.sendMessage(msgController.text);
-                        msgController.clear();
-                        focusNode.unfocus();
-                      },
-                      child: const Text('Send'),
-                    ),
-                  ],
-                ),
-              const SizedBox(height: 24),
-              if (showStream)
-                StreamBuilder<String>(
-                  stream: myMqttService.receiveTopicMessage(),
-                  // Call the function to get the message stream
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      topicMessage.add(snapshot.data!);
-                      /*return Center(
-                      child: Text('Received Message: ${snapshot.data}'),
-                    );*/
-                      return ListView.builder(
-                        primary: false,
-                        shrinkWrap: true,
-                        itemCount: topicMessage.length,
-                        itemBuilder: (context, index) => ListTile(
-                          leading: const Icon(Icons.message),
-                          title: Text(
-                            topicMessage.elementAt(index),
-                          ),
+                                msgController.clear();
+                                focusNode.unfocus();
+                              },
+                              child: const Text('Send'),
+                            ),
+                          ],
                         ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('Error: ${snapshot.error}'),
-                      );
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
+                        const SizedBox(height: 24),
+                        // Displaying Stream Message
+                        if (mqttConnState.msgList.isNotEmpty)
+                          Column(
+                            children: [
+                              const Text(
+                                'All Messages',
+                                style: TextStyle(fontSize: 24),
+                              ),
+                              const Divider(height: 2),
+                              const SizedBox(height: 12),
+                              ListView.builder(
+                                primary: false,
+                                shrinkWrap: true,
+                                itemCount: mqttConnState.msgList.length,
+                                itemBuilder: (context, index) => ListTile(
+                                  leading: const Icon(Icons.message),
+                                  title: Text(
+                                    mqttConnState.msgList.elementAt(index),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                        // BlocBuilder<MqttBloc, MqttState>(
+                        //   builder: (context, messageState) {
+                        //     if (messageState is MqttMessageUpdateState &&
+                        //         messageState.msgList.isNotEmpty) {
+                        //       return Column(
+                        //         children: [
+                        //           const Text(
+                        //             'All Messages',
+                        //             style: TextStyle(fontSize: 24),
+                        //           ),
+                        //           const Divider(height: 2),
+                        //           const SizedBox(height: 12),
+                        //           ListView.builder(
+                        //             primary: false,
+                        //             shrinkWrap: true,
+                        //             itemCount: messageState.msgList.length,
+                        //             itemBuilder: (context, index) => ListTile(
+                        //               leading: const Icon(Icons.message),
+                        //               title: Text(
+                        //                 messageState.msgList.elementAt(index),
+                        //               ),
+                        //             ),
+                        //           ),
+                        //         ],
+                        //       );
+                        //     }
+                        //     return const Center(
+                        //       child: Text('No message found!'),
+                        //     );
+                        //   },
+                        // ),
+                      ],
+                    );
+                  }
+                  return Row(
+                    children: [
+                      Expanded(
+                        flex: 6,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: usernameController,
+                              decoration: const InputDecoration(
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 4),
+                                labelText: 'Username',
+                                hintText: 'Username',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: passwordController,
+                              decoration: const InputDecoration(
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 4),
+                                labelText: 'Password',
+                                hintText: 'Password',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: topicController,
+                              decoration: const InputDecoration(
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 4),
+                                labelText: 'Topic',
+                                hintText: 'Topic',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        flex: 3,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            context.read<MqttBloc>().add(MqttInitializeEvent(
+                                  username: usernameController.text,
+                                  password: passwordController.text,
+                                  topic: topicController.text,
+                                ));
+                          },
+                          child: const Text('Connect'),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
         ),

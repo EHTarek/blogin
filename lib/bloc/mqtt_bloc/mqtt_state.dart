@@ -9,10 +9,10 @@ class MqttInitial extends MqttState {
   List<Object> get props => [];
 }
 
-class MqttUpdateState extends MqttState {
+class MqttMessageUpdateState extends MqttState {
   final List<String> msgList;
 
-  const MqttUpdateState({required this.msgList});
+  const MqttMessageUpdateState({required this.msgList});
 
   @override
   List<Object> get props => [];

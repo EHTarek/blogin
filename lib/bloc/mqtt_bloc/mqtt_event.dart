@@ -25,3 +25,13 @@ class MqttSendMessageEvent extends MqttEvent {
   @override
   List<Object?> get props => [];
 }
+
+class MqttRequestMessageEvent extends MqttEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class MqttDisconnectEvent extends MqttEvent {
+  @override
+  List<Object?> get props => [];
+}

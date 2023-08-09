@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:blogin/bloc/mqtt_bloc/mqtt_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
@@ -27,7 +29,7 @@ class MQTTClientService {
     _setupMqttClient();
     await _connectClient(username, password);
     _subscribeToTopic(topic);
-    receiveTopicMessage();
+    // receiveTopicMessage();
   }
 
   void sendMessage(String msg) {
@@ -94,6 +96,9 @@ class MQTTClientService {
       final MqttPublishMessage recMess = c[0].payload as MqttPublishMessage;
       String message =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+
+      print('Received Message inside mqtt_client_service: $message');
+
       messageStreamController
           .add(message); // Add the received message to the stream
     });
@@ -109,6 +114,10 @@ class MQTTClientService {
     print('Publishing message "$message" to topic ${'flutter_test'}');
     client.publishMessage(
         'flutter_test', MqttQos.exactlyOnce, builder.payload!);
+  }
+
+  void disconnectClient() {
+    client.disconnect();
   }
 
   // callbacks for different events
