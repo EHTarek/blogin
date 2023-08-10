@@ -144,7 +144,7 @@ class ItemDetailPage extends StatelessWidget {
                   child: InkWell(
                     onTap: ShoppingPage.mainCount < 3
                         ? () {
-                      Log('MainCount: $ShoppingPage.mainCount');
+                      // Log('MainCount: $ShoppingPage.mainCount');
                       ShoppingPage.mainCount++;
                       context
                           .read<CartItemBloc>()
@@ -152,10 +152,10 @@ class ItemDetailPage extends StatelessWidget {
                         item: item,
                         index: item.id,
                       ));
-                      Log('Tapped at index = ${item.id}');
+                      // Log('Tapped at index = ${item.id}');
                     }
                         : () {
-                      Log('MainCount: $ShoppingPage.mainCount');
+                      // Log('MainCount: $ShoppingPage.mainCount');
                       ScaffoldMessenger.of(context)
                           .showSnackBar(const SnackBar(
                           content: Text(

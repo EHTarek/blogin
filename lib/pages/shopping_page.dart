@@ -140,7 +140,7 @@ class ShoppingPage extends StatelessWidget {
                                               CartItemRemoveEvent(
                                                   index: index));
 
-                                          Log('Current index = $index');
+                                          // Log('Current index = $index');
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.all(2),
@@ -168,7 +168,7 @@ class ShoppingPage extends StatelessWidget {
                                                       index: index,
                                                     ));
 
-                                                Log('Current index = $index');
+                                                // Log('Current index = $index');
                                               }
                                             : () {
                                                 ScaffoldMessenger.of(context)
@@ -199,7 +199,7 @@ class ShoppingPage extends StatelessWidget {
                               child: InkWell(
                                 onTap: mainCount < 3
                                     ? () {
-                                        Log('MainCount: $mainCount');
+                                        // Log('MainCount: $mainCount');
                                         mainCount++;
 
                                         context
@@ -209,7 +209,7 @@ class ShoppingPage extends StatelessWidget {
                                                   .shoppingItems[index],
                                               index: index,
                                             ));
-                                        Log('Tapped at index = $index');
+                                        // Log('Tapped at index = $index');
                                       }
                                     : () {
                                         Log('MainCount: $mainCount');

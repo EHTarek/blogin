@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "271962741538",
+    "project_id": "flutter-notification-8626d",
+    "storage_bucket": "flutter-notification-8626d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271962741538:android:d5b9d6271df825de1b637b",
+        "android_client_info": {
+          "package_name": "com.mnt.tariqul.blogin_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "271962741538-spjeiam3363nc8quosi1ok1ggg5m89t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCA33EFwayKW7h0zG4Qeq0qUusxlozXPH8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "271962741538-spjeiam3363nc8quosi1ok1ggg5m89t9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "271962741538-8d5n93vspobrtpcprt7cer705kcvqspg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.blogin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

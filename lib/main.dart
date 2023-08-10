@@ -7,13 +7,15 @@ import 'package:blogin/navigation/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'bloc/home/home_bloc.dart';
 import 'bloc/login/login_bloc.dart';
 
 // ToDo: name route, onGenerate route, go route, BlocConsumer, BlocObserver, Repository Pattern, Internet State checker,
 
-main() {
+main() async {
   Bloc.observer = const AppObserver();
 
   /* final deviceInfoPlugin = DeviceInfoPlugin();
@@ -22,6 +24,10 @@ main() {
 
   print(allInfo);*/
 
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const LoginApp());
 }
 
