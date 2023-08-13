@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.blogin</string>
+	<string>com.mnt.tariqul.blogin_test</string>
 	<key>PROJECT_ID</key>
 	<string>flutter-notification-8626d</string>
 	<key>STORAGE_BUCKET</key>

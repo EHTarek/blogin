@@ -8,7 +8,7 @@ class DbHelper {
   static const int version = 1;
   static const dbName = 'ShoppingCart.db';
 
-  static const table = 'cart_item';
+  static const table = 'my_cart_item';
 
   static const columnId = 'id';
   static const columnImg = 'img';
@@ -25,9 +25,9 @@ class DbHelper {
     Database database = await openDatabase(
       path,
       version: version,
-      onConfigure: (db) async {
+      /*onConfigure: (db) async {
        await db.delete(table);
-      },
+      },*/
       onCreate: _onCreate,
     );
     return database;

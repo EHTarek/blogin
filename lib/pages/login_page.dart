@@ -1,16 +1,15 @@
 import 'package:blogin/navigation/preference_method.dart';
 import 'package:blogin/navigation/routes.dart';
+import 'package:blogin/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import '../bloc/cart_item/cart_item_bloc.dart';
 import '../bloc/login/login_bloc.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-
 
   @override
   LoginPageState createState() => LoginPageState();
@@ -19,6 +18,7 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final _employeeIdController = TextEditingController(text: 'tarikul');
   final _passwordController = TextEditingController(text: '1234');
+  NotificationService notificationService = NotificationService();
 
   @override
   void dispose() {
@@ -30,14 +30,19 @@ class LoginPageState extends State<LoginPage> {
   @override
   initState() {
     super.initState();
+    notificationService.requestNotificationPermission();
+    notificationService.isTokenRefreshed();
+    notificationService
+        .getDeviceToken()
+        .then((value) => print('Device Token: $value'));
+    notificationService.firebaseInit(context);
     getDeviceInfo();
-    // context.re,ad<CartItemBloc>().add(CartItemLoadDataEvent());
+    // context.read<CartItemBloc>().add(CartItemLoadDataEvent());
     userLoggedIn();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return LoaderOverlay(
       child: Scaffold(
         appBar: AppBar(
@@ -65,7 +70,8 @@ class LoginPageState extends State<LoginPage> {
 
               // Navigator.pushReplacementNamed(context, '/home');
               // Navigator.pushNamed(context, Routes.kHome);
-              Navigator.pushNamed(context, Routes.kShopping);
+              // Navigator.pushNamed(context, Routes.kShopping);
+              Navigator.pushReplacementNamed(context, Routes.kShopping);
             }
           },
           builder: (context, state) {
@@ -119,13 +125,13 @@ class LoginPageState extends State<LoginPage> {
     print(androidInfo.id);
   }
 
-  void userLoggedIn() async{
+  void userLoggedIn() async {
     PreferenceMethod preferenceMethod = PreferenceMethod();
-    String? token = await preferenceMethod.getTokenAccess();
-    if(token!.isNotEmpty){
+    String token = await preferenceMethod.getTokenAccess();
+    if (token.isNotEmpty) {
       bool hasExpired = JwtDecoder.isExpired(token);
-      if(!hasExpired){
-        if(mounted){
+      if (!hasExpired) {
+        if (mounted) {
           Navigator.pushReplacementNamed(context, Routes.kShopping);
         }
       }

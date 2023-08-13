@@ -64,6 +64,6 @@ class DefaultFirebaseOptions {
     projectId: 'flutter-notification-8626d',
     storageBucket: 'flutter-notification-8626d.appspot.com',
     iosClientId: '271962741538-8d5n93vspobrtpcprt7cer705kcvqspg.apps.googleusercontent.com',
-    iosBundleId: 'com.example.blogin',
+    iosBundleId: 'com.mnt.tariqul.blogin_test',
   );
 }

@@ -4,16 +4,13 @@ import 'package:blogin/bloc/message/message_bloc.dart';
 import 'package:blogin/bloc/mqtt_bloc/mqtt_bloc.dart';
 import 'package:blogin/navigation/route_generator.dart';
 import 'package:blogin/navigation/routes.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 import 'bloc/home/home_bloc.dart';
 import 'bloc/login/login_bloc.dart';
-
-// ToDo: name route, onGenerate route, go route, BlocConsumer, BlocObserver, Repository Pattern, Internet State checker,
 
 main() async {
   Bloc.observer = const AppObserver();
@@ -25,10 +22,15 @@ main() async {
   print(allInfo);*/
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const LoginApp());
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async{
+  await Firebase.initializeApp();
+  print(message.notification!.title.toString());
 }
 
 class LoginApp extends StatelessWidget {
