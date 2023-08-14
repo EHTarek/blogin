@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:app_settings/app_settings.dart';
+import 'package:blogin/navigation/routes.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -55,17 +56,28 @@ class NotificationService {
     );
 
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onDidReceiveNotificationResponse: (payload) {});
+        onDidReceiveNotificationResponse: (payload) {
+      handleMessage(context, message);
+    });
   }
 
   void firebaseInit(BuildContext context) {
     FirebaseMessaging.onMessage.listen((message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification!.android;
+      print('Notification title: ${notification!.title}');
+      print('Notification body: ${notification!.body}');
+      print('Count: ${android!.count}');
+      print('Data: ${message.data.toString()}');
+
       if (Platform.isAndroid) {
         initLocalNotifications(context, message);
         showNotification(message);
+      } else if (Platform.isIOS) {
+        foregroundMessage();
+      } else {
+        showNotification(message);
       }
-
-      showNotification(message);
     });
   }
 
@@ -106,5 +118,34 @@ class NotificationService {
         notificationDetails,
       );
     });
+  }
+
+  void handleMessage(BuildContext context, RemoteMessage message) {
+    if (message.data['type'] == 'shopping') {
+      Navigator.pushNamed(context, Routes.kShopping);
+    }
+  }
+
+  Future<void> setupInteractMessage(BuildContext context) async {
+    // When app is terminated
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      handleMessage(context, initialMessage);
+    }
+
+    // When app is in background
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      handleMessage(context, event);
+    });
+  }
+
+  Future<void> foregroundMessage() async {
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      sound: true,
+      badge: true,
+      alert: true,
+    );
   }
 }

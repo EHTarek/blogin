@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:blogin/navigation/preference_method.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:blogin/services/notification_service.dart';
@@ -7,6 +9,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import '../bloc/login/login_bloc.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -31,11 +34,14 @@ class LoginPageState extends State<LoginPage> {
   initState() {
     super.initState();
     notificationService.requestNotificationPermission();
+    notificationService.firebaseInit(context);
+    notificationService.setupInteractMessage(context);
+    notificationService.foregroundMessage();
     notificationService.isTokenRefreshed();
     notificationService
         .getDeviceToken()
         .then((value) => print('Device Token: $value'));
-    notificationService.firebaseInit(context);
+
     getDeviceInfo();
     // context.read<CartItemBloc>().add(CartItemLoadDataEvent());
     userLoggedIn();
@@ -47,6 +53,36 @@ class LoginPageState extends State<LoginPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Login'),
+          actions: [
+            IconButton(
+              onPressed: () {
+                notificationService.getDeviceToken().then((value) async {
+                  var data = {
+                    'to': value.toString(),
+                    'priority': 'high',
+                    'notification': {
+                      'title': 'Test notification title',
+                      'body': 'Test notification body...'
+                    },
+                    'data':{
+                      'type':'shopping',
+                      'id':'abc123'
+                    }
+                  };
+                  await http.post(
+                    Uri.parse('https://fcm.googleapis.com/fcm/send'),
+                    body: jsonEncode(data),
+                    headers: {
+                      'Content-Type': 'application/json; charset=UTF-8',
+                      'Authorization':
+                          'key=AAAAP1I-GyI:APA91bEwiBXSfJObP7Hq0W48T2cIG61PtgbsjWNo_eVu1wnF3Gi7SL_tt6gtuXVpUxX3W3P9xEzppGIMlfPmSCwvzb97oNnuKLdHOlVwxsGmjamgd7btidAXWOdKId9sOikbvDp4JRAi'
+                    },
+                  );
+                });
+              },
+              icon: const Icon(Icons.notifications_active),
+            ),
+          ],
         ),
         // body: BlocListener<LoginBloc, LoginState>(
         body: BlocConsumer<LoginBloc, LoginState>(

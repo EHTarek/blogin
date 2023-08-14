@@ -1,4 +1,3 @@
-import 'package:blogin/bloc/mqtt_bloc/mqtt_bloc.dart';
 import 'package:blogin/data/repository/shopping_item_repo.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:blogin/services/logs.dart';
@@ -23,7 +22,6 @@ class ShoppingPage extends StatelessWidget {
           IconButton(
             onPressed: () {
               Navigator.pushNamed(context, Routes.kMqttPage);
-              // context.read<MqttBloc>().add(MqttInitializeEvent());
             },
             icon: const Icon(Icons.app_shortcut_sharp),
           ),
