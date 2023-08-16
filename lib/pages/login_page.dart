@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:blogin/navigation/preference_method.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:blogin/services/notification_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -22,6 +23,7 @@ class LoginPageState extends State<LoginPage> {
   final _employeeIdController = TextEditingController(text: 'tarikul');
   final _passwordController = TextEditingController(text: '1234');
   NotificationService notificationService = NotificationService();
+  final db = FirebaseFirestore.instance;
 
   @override
   void dispose() {
@@ -38,9 +40,12 @@ class LoginPageState extends State<LoginPage> {
     notificationService.setupInteractMessage(context);
     notificationService.foregroundMessage();
     notificationService.isTokenRefreshed();
-    notificationService
-        .getDeviceToken()
-        .then((value) => print('Device Token: $value'));
+    notificationService.getDeviceToken().then((value) {
+      print('Device Token: $value');
+      db.collection('device_token').doc('token').set({'key': value.toString()}).onError(
+          (error, _) => ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(error.toString()))));
+    });
 
     getDeviceInfo();
     // context.read<CartItemBloc>().add(CartItemLoadDataEvent());
@@ -64,10 +69,7 @@ class LoginPageState extends State<LoginPage> {
                       'title': 'Test notification title',
                       'body': 'Test notification body...'
                     },
-                    'data':{
-                      'type':'shopping',
-                      'id':'abc123'
-                    }
+                    'data': {'type': 'shopping', 'id': 'abc123'}
                   };
                   await http.post(
                     Uri.parse('https://fcm.googleapis.com/fcm/send'),

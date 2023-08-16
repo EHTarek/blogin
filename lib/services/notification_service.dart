@@ -3,11 +3,13 @@ import 'dart:math';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:blogin/navigation/routes.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
+  final db = FirebaseFirestore.instance;
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -34,39 +36,13 @@ class NotificationService {
     }
   }
 
-  Future<String> getDeviceToken() async {
-    String? token = await messaging.getToken();
-    return token!;
-  }
-
-  void isTokenRefreshed() {
-    messaging.onTokenRefresh.listen((event) {
-      print('Refreshed token: $event');
-    });
-  }
-
-  void initLocalNotifications(
-      BuildContext context, RemoteMessage message) async {
-    var androidInitializationSettings =
-        const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var iosInitializationSettings = const DarwinInitializationSettings();
-    var initializationSettings = InitializationSettings(
-      android: androidInitializationSettings,
-      iOS: iosInitializationSettings,
-    );
-
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onDidReceiveNotificationResponse: (payload) {
-      handleMessage(context, message);
-    });
-  }
-
   void firebaseInit(BuildContext context) {
     FirebaseMessaging.onMessage.listen((message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification!.android;
+
       print('Notification title: ${notification!.title}');
-      print('Notification body: ${notification!.body}');
+      print('Notification body: ${notification.body}');
       print('Count: ${android!.count}');
       print('Data: ${message.data.toString()}');
 
@@ -79,6 +55,30 @@ class NotificationService {
         showNotification(message);
       }
     });
+  }
+
+  void initLocalNotifications(
+    BuildContext context,
+    RemoteMessage message,
+  ) async {
+    var androidInitializationSettings =
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iosInitializationSettings = const DarwinInitializationSettings();
+
+    var initializationSettings = InitializationSettings(
+      android: androidInitializationSettings,
+      iOS: iosInitializationSettings,
+    );
+
+    await _flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (payload) {
+        handleMessage(context, message);
+      },
+      /*onDidReceiveBackgroundNotificationResponse: (payload) {
+        handleMessage(context, message);
+      },*/
+    );
   }
 
   Future<void> showNotification(RemoteMessage message) async {
@@ -147,5 +147,18 @@ class NotificationService {
       badge: true,
       alert: true,
     );
+  }
+
+  Future<String> getDeviceToken() async {
+    String? token = await messaging.getToken();
+    return token!;
+  }
+
+  void isTokenRefreshed() {
+    messaging.onTokenRefresh.listen((event) {
+      print('Refreshed token: $event');
+      db.collection('device_token').doc('token').set({'key': event.toString()}).onError(
+              (error, _) => print(error.toString()));
+    });
   }
 }

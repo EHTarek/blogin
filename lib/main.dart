@@ -4,6 +4,7 @@ import 'package:blogin/bloc/message/message_bloc.dart';
 import 'package:blogin/bloc/mqtt_bloc/mqtt_bloc.dart';
 import 'package:blogin/navigation/route_generator.dart';
 import 'package:blogin/navigation/routes.dart';
+import 'package:blogin/services/notification_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,9 +29,10 @@ main() async {
 }
 
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async{
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print(message.notification!.title.toString());
+  NotificationService().showNotification(message);
 }
 
 class LoginApp extends StatelessWidget {
