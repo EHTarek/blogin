@@ -22,7 +22,7 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final _employeeIdController = TextEditingController(text: 'tarikul');
   final _passwordController = TextEditingController(text: '1234');
-  NotificationService notificationService = NotificationService();
+  // NotificationService notificationService = NotificationService();
   final db = FirebaseFirestore.instance;
 
   @override
@@ -35,17 +35,17 @@ class LoginPageState extends State<LoginPage> {
   @override
   initState() {
     super.initState();
-    notificationService.requestNotificationPermission();
-    notificationService.firebaseInit(context);
-    notificationService.setupInteractMessage(context);
-    notificationService.foregroundMessage();
-    notificationService.isTokenRefreshed();
-    notificationService.getDeviceToken().then((value) {
-      print('Device Token: $value');
-      db.collection('device_token').doc('token').set({'key': value.toString()}).onError(
-          (error, _) => ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(error.toString()))));
-    });
+    // notificationService.requestNotificationPermission();
+    // notificationService.foregroundMessage();
+    // notificationService.firebaseInit(context);
+    // notificationService.setupInteractMessage(context);
+    // notificationService.isTokenRefreshed();
+    // notificationService.getDeviceToken().then((value) {
+    //   print('Device Token: $value');
+    //   db.collection('device_token').doc('token').set({'key': value.toString()}).onError(
+    //       (error, _) => ScaffoldMessenger.of(context)
+    //           .showSnackBar(SnackBar(content: Text(error.toString()))));
+    // });
 
     getDeviceInfo();
     // context.read<CartItemBloc>().add(CartItemLoadDataEvent());
@@ -59,31 +59,31 @@ class LoginPageState extends State<LoginPage> {
         appBar: AppBar(
           title: const Text('Login'),
           actions: [
-            IconButton(
-              onPressed: () {
-                notificationService.getDeviceToken().then((value) async {
-                  var data = {
-                    'to': value.toString(),
-                    'priority': 'high',
-                    'notification': {
-                      'title': 'Test notification title',
-                      'body': 'Test notification body...'
-                    },
-                    'data': {'type': 'shopping', 'id': 'abc123'}
-                  };
-                  await http.post(
-                    Uri.parse('https://fcm.googleapis.com/fcm/send'),
-                    body: jsonEncode(data),
-                    headers: {
-                      'Content-Type': 'application/json; charset=UTF-8',
-                      'Authorization':
-                          'key=AAAAP1I-GyI:APA91bEwiBXSfJObP7Hq0W48T2cIG61PtgbsjWNo_eVu1wnF3Gi7SL_tt6gtuXVpUxX3W3P9xEzppGIMlfPmSCwvzb97oNnuKLdHOlVwxsGmjamgd7btidAXWOdKId9sOikbvDp4JRAi'
-                    },
-                  );
-                });
-              },
-              icon: const Icon(Icons.notifications_active),
-            ),
+            // IconButton(
+            //   onPressed: () {
+            //     notificationService.getDeviceToken().then((value) async {
+            //       var data = {
+            //         'to': value.toString(),
+            //         'priority': 'high',
+            //         'notification': {
+            //           'title': 'Test notification title',
+            //           'body': 'Test notification body...'
+            //         },
+            //         'data': {'type': 'shopping', 'id': 'abc123'}
+            //       };
+            //       await http.post(
+            //         Uri.parse('https://fcm.googleapis.com/fcm/send'),
+            //         body: jsonEncode(data),
+            //         headers: {
+            //           'Content-Type': 'application/json; charset=UTF-8',
+            //           'Authorization':
+            //               'key=AAAAP1I-GyI:APA91bEwiBXSfJObP7Hq0W48T2cIG61PtgbsjWNo_eVu1wnF3Gi7SL_tt6gtuXVpUxX3W3P9xEzppGIMlfPmSCwvzb97oNnuKLdHOlVwxsGmjamgd7btidAXWOdKId9sOikbvDp4JRAi'
+            //         },
+            //       );
+            //     });
+            //   },
+            //   icon: const Icon(Icons.notifications_active),
+            // ),
           ],
         ),
         // body: BlocListener<LoginBloc, LoginState>(

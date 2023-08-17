@@ -32,7 +32,7 @@ main() async {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   // print(message.notification!.title.toString());
-  NotificationService().showNotification(message);
+  // NotificationService().showNotification(message);
 }
 
 class LoginApp extends StatelessWidget {

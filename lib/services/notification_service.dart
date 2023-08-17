@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:math';
-
 import 'package:app_settings/app_settings.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,6 +17,7 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> requestNotificationPermission() async {
+    print('================ requestNotificationPermission ===============');
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: true,
@@ -41,6 +40,7 @@ class NotificationService {
   }
 
   void firebaseInit(BuildContext context) {
+    print('================ firebaseInit ===============');
     FirebaseMessaging.onMessage.listen((message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification!.android;
@@ -52,7 +52,7 @@ class NotificationService {
 
       if (Platform.isAndroid) {
         initLocalNotifications(context, message);
-        showNotification(message);
+        // showNotification(message);
       }
       if (Platform.isIOS) {
         foregroundMessage();
@@ -65,6 +65,7 @@ class NotificationService {
     BuildContext context,
     RemoteMessage message,
   ) async {
+    print('================ initLocalNotifications ===============');
     var androidInitializationSettings =
         const AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -77,9 +78,9 @@ class NotificationService {
 
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (payload) {
+      /*onDidReceiveNotificationResponse: (payload) {
         handleMessage(context, message);
-      },
+      },*/
       /*onDidReceiveBackgroundNotificationResponse: (payload) {
         handleMessage(context, message);
       },*/
@@ -88,6 +89,7 @@ class NotificationService {
 
   // function to show visible notification when app is active
   Future<void> showNotification(RemoteMessage message) async {
+    print('================ showNotification ===============');
     AndroidNotificationChannel channel = AndroidNotificationChannel(
       message.notification!.android!.channelId.toString(),
       message.notification!.android!.channelId.toString(),
@@ -131,29 +133,35 @@ class NotificationService {
   }
 
   void handleMessage(BuildContext context, RemoteMessage message) {
+    print('================ handleMessage ===============');
     if (message.data['type'] == 'shopping') {
       Navigator.pushNamed(context, Routes.kShopping);
     }
   }
 
   //handle tap on notification when app is in background or terminated
-  Future<void> setupInteractMessage(BuildContext context) async {
+ /* Future<void> setupInteractMessage(BuildContext context) async {
+    print('================ setupInteractMessage ===============');
     // When app is terminated
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    // RemoteMessage? initialMessage =
+    //     await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage = await messaging.getInitialMessage();
     if (initialMessage != null) {
+      // showNotification(initialMessage);
       handleMessage(context, initialMessage);
     }
 
     // When app is in background
-    FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      handleMessage(context, event);
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      // showNotification(message);
+      handleMessage(context, message);
     });
-  }
+  }*/
 
   Future<void> foregroundMessage() async {
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
+    print('================ foregroundMessage ===============');
+    // await FirebaseMessaging.instance
+    await messaging.setForegroundNotificationPresentationOptions(
       sound: true,
       badge: true,
       alert: true,
@@ -162,11 +170,13 @@ class NotificationService {
 
   //function to get device token on which we will send the notifications
   Future<String> getDeviceToken() async {
+    print('================ getDeviceToken ===============');
     String? token = await messaging.getToken();
     return token!;
   }
 
   void isTokenRefreshed() {
+    print('================ isTokenRefreshed ===============');
     messaging.onTokenRefresh.listen((event) {
       print('Refreshed token: $event');
       db
