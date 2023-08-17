@@ -10,7 +10,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
   final db = FirebaseFirestore.instance;
+
+  //initialising firebase message plugin
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  //initialising local notification plugin
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -31,8 +35,8 @@ class NotificationService {
         AuthorizationStatus.provisional) {
       print('Notification Permission Provisional');
     } else {
-      await AppSettings.openAppSettings(type: AppSettingsType.notification);
       print('Notification Permission Denied');
+      await AppSettings.openAppSettings(type: AppSettingsType.notification);
     }
   }
 
@@ -49,20 +53,21 @@ class NotificationService {
       if (Platform.isAndroid) {
         initLocalNotifications(context, message);
         showNotification(message);
-      } else if (Platform.isIOS) {
+      }
+      if (Platform.isIOS) {
         foregroundMessage();
-      } else {
-        showNotification(message);
       }
     });
   }
 
+//function to initialise flutter local notification plugin to show notifications for android when app is active
   void initLocalNotifications(
     BuildContext context,
     RemoteMessage message,
   ) async {
     var androidInitializationSettings =
         const AndroidInitializationSettings('@mipmap/ic_launcher');
+
     var iosInitializationSettings = const DarwinInitializationSettings();
 
     var initializationSettings = InitializationSettings(
@@ -81,21 +86,26 @@ class NotificationService {
     );
   }
 
+  // function to show visible notification when app is active
   Future<void> showNotification(RemoteMessage message) async {
     AndroidNotificationChannel channel = AndroidNotificationChannel(
-      Random.secure().nextInt(10000000).toString(),
-      'High Importance Notifications',
+      message.notification!.android!.channelId.toString(),
+      message.notification!.android!.channelId.toString(),
       importance: Importance.max,
+      showBadge: true,
+      // sound: const RawResourceAndroidNotificationSound('jetsons_doorbell'),
     );
 
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      channel.id,
-      channel.name,
+      channel.id.toString(),
+      channel.name.toString(),
       channelDescription: 'Channel Description',
       importance: Importance.high,
       priority: Priority.high,
+      playSound: true,
       ticker: 'ticker',
+      // sound: channel.sound,
     );
 
     DarwinNotificationDetails darwinNotificationDetails =
@@ -113,8 +123,8 @@ class NotificationService {
     Future.delayed(Duration.zero, () {
       _flutterLocalNotificationsPlugin.show(
         0,
-        message.notification!.title,
-        message.notification!.body,
+        message.notification!.title.toString(),
+        message.notification!.body.toString(),
         notificationDetails,
       );
     });
@@ -126,6 +136,7 @@ class NotificationService {
     }
   }
 
+  //handle tap on notification when app is in background or terminated
   Future<void> setupInteractMessage(BuildContext context) async {
     // When app is terminated
     RemoteMessage? initialMessage =
@@ -149,6 +160,7 @@ class NotificationService {
     );
   }
 
+  //function to get device token on which we will send the notifications
   Future<String> getDeviceToken() async {
     String? token = await messaging.getToken();
     return token!;
@@ -157,7 +169,10 @@ class NotificationService {
   void isTokenRefreshed() {
     messaging.onTokenRefresh.listen((event) {
       print('Refreshed token: $event');
-      db.collection('device_token').doc('token').set({'key': event.toString()}).onError(
+      db
+          .collection('device_token')
+          .doc('token')
+          .set({'key': event.toString()}).onError(
               (error, _) => print(error.toString()));
     });
   }
