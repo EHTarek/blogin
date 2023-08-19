@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:blogin/navigation/preference_method.dart';
 import 'package:blogin/navigation/routes.dart';
 import 'package:blogin/services/logs.dart';
@@ -11,7 +9,9 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import '../bloc/login/login_bloc.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:http/http.dart' as http;
+
+import '../bloc/notification/notification_bloc.dart';
+// import 'package:http/http.dart' as http;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -43,9 +43,12 @@ class LoginPageState extends State<LoginPage> {
     notificationService.isTokenRefreshed();
     notificationService.getDeviceToken().then((value) {
       Log('Device Token: $value');
-      db.collection('device_token').doc('token').set({'key': value.toString()}).onError(
-          (error, _) => ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(error.toString()))));
+      db
+          .collection('device_token')
+          .doc('token')
+          .set({'key': value.toString()}).onError((error, _) =>
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(error.toString()))));
     });
 
     getDeviceInfo();
@@ -59,7 +62,28 @@ class LoginPageState extends State<LoginPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Login'),
-          actions: const [
+          actions: [
+            InkWell(
+              onTap: () {
+                //context.read<NotificationBloc>().add(NotificationViewEvent());
+                Navigator.pushNamed(context, Routes.kNotificationScreen);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Badge(
+                  label: BlocBuilder<NotificationBloc, NotificationState>(
+                    builder: (context, state) {
+                      if (state is NotificationUpdatedState) {
+                        return Text(state.updatedCount.toString());
+                      }
+                      return const Text('0');
+                    },
+                  ),
+                  child: const Icon(Icons.notifications),
+                ),
+              ),
+            ),
+
             // IconButton(
             //   onPressed: () {
             //     notificationService.getDeviceToken().then((value) async {

@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:blogin/services/db_helper.dart';
+import 'package:blogin/services/db/shopping_db_helper.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../data/model/shopping_item_model.dart';
@@ -10,7 +10,7 @@ part 'cart_item_state.dart';
 
 class CartItemBloc extends Bloc<CartItemEvent, CartItemState> {
   CartItemBloc() : super(CartItemInitial()) {
-    DbHelper dbHelper = DbHelper();
+    ShoppingDbHelper dbHelper = ShoppingDbHelper();
 
     on<CartItemAddToCartEvent>((event, emit) async {
       emit(CartItemInitial());

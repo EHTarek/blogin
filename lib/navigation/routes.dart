@@ -1,4 +1,4 @@
-class Routes{
+class Routes {
   static const String kRoot = '/';
   static const String kHome = '/home';
   static const String kMessage = '/message';
@@ -6,4 +6,5 @@ class Routes{
   static const String kItemDetail = '/item_detail';
   static const String kCheckout = '/checkout';
   static const String kMqttPage = '/mqtt_page';
+  static const String kNotificationScreen = '/all_notification';
 }

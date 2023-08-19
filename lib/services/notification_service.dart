@@ -1,13 +1,18 @@
 import 'dart:io';
 import 'package:app_settings/app_settings.dart';
+import 'package:blogin/bloc/notification/notification_bloc.dart';
 import 'package:blogin/navigation/routes.dart';
+import 'package:blogin/services/db/notification_db_helper.dart';
 import 'package:blogin/services/logs.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 class NotificationService {
   final db = FirebaseFirestore.instance;
+  late final BuildContext context;
 
   //initialising firebase message plugin
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -40,6 +45,7 @@ class NotificationService {
   }
 
   void firebaseInit(BuildContext context) {
+    this.context = context;
     Log('================ firebaseInit ===============');
     FirebaseMessaging.onMessage.listen((message) {
       RemoteNotification? notification = message.notification;
@@ -89,6 +95,8 @@ class NotificationService {
 
   // function to show visible notification when app is active
   Future<void> showNotification(RemoteMessage message) async {
+    NotificationDbHelper().dbInsert(message: message);
+    BlocProvider.of<NotificationBloc>(context).add(NotificationUpdateEvent());
     Log('================ showNotification ===============');
     AndroidNotificationChannel channel = AndroidNotificationChannel(
       message.notification!.android!.channelId.toString(),

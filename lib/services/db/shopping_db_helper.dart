@@ -2,9 +2,9 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../data/model/shopping_item_model.dart';
+import '../../data/model/shopping_item_model.dart';
 
-class DbHelper {
+class ShoppingDbHelper {
   static const int version = 1;
   static const dbName = 'ShoppingCart.db';
 
