@@ -3,7 +3,7 @@ import 'package:logger/logger.dart';
 dynamic Log(dynamic log) {
   var logger = Logger(
     printer: PrettyPrinter(
-        methodCount: 2,
+        methodCount: 1,
         // Number of method calls to be displayed
         errorMethodCount: 8,
         // Number of method calls if stacktrace is provided

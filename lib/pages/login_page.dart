@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:blogin/navigation/preference_method.dart';
 import 'package:blogin/navigation/routes.dart';
+import 'package:blogin/services/logs.dart';
 import 'package:blogin/services/notification_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final _employeeIdController = TextEditingController(text: 'tarikul');
   final _passwordController = TextEditingController(text: '1234');
-  // NotificationService notificationService = NotificationService();
+  NotificationService notificationService = NotificationService();
   final db = FirebaseFirestore.instance;
 
   @override
@@ -35,17 +36,17 @@ class LoginPageState extends State<LoginPage> {
   @override
   initState() {
     super.initState();
-    // notificationService.requestNotificationPermission();
-    // notificationService.foregroundMessage();
-    // notificationService.firebaseInit(context);
-    // notificationService.setupInteractMessage(context);
-    // notificationService.isTokenRefreshed();
-    // notificationService.getDeviceToken().then((value) {
-    //   print('Device Token: $value');
-    //   db.collection('device_token').doc('token').set({'key': value.toString()}).onError(
-    //       (error, _) => ScaffoldMessenger.of(context)
-    //           .showSnackBar(SnackBar(content: Text(error.toString()))));
-    // });
+    notificationService.requestNotificationPermission();
+    notificationService.foregroundMessage();
+    notificationService.firebaseInit(context);
+    notificationService.setupInteractMessage(context);
+    notificationService.isTokenRefreshed();
+    notificationService.getDeviceToken().then((value) {
+      Log('Device Token: $value');
+      db.collection('device_token').doc('token').set({'key': value.toString()}).onError(
+          (error, _) => ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(error.toString()))));
+    });
 
     getDeviceInfo();
     // context.read<CartItemBloc>().add(CartItemLoadDataEvent());
@@ -58,7 +59,7 @@ class LoginPageState extends State<LoginPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Login'),
-          actions: [
+          actions: const [
             // IconButton(
             //   onPressed: () {
             //     notificationService.getDeviceToken().then((value) async {

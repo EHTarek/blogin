@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:app_settings/app_settings.dart';
 import 'package:blogin/navigation/routes.dart';
+import 'package:blogin/services/logs.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 class NotificationService {
   final db = FirebaseFirestore.instance;
 
@@ -17,7 +17,7 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> requestNotificationPermission() async {
-    print('================ requestNotificationPermission ===============');
+    Log('================ requestNotificationPermission ===============');
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: true,
@@ -29,30 +29,30 @@ class NotificationService {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('Notification Permission Authorized');
+      Log('Notification Permission Authorized');
     } else if (settings.authorizationStatus ==
         AuthorizationStatus.provisional) {
-      print('Notification Permission Provisional');
+      Log('Notification Permission Provisional');
     } else {
-      print('Notification Permission Denied');
+      Log('Notification Permission Denied');
       await AppSettings.openAppSettings(type: AppSettingsType.notification);
     }
   }
 
   void firebaseInit(BuildContext context) {
-    print('================ firebaseInit ===============');
+    Log('================ firebaseInit ===============');
     FirebaseMessaging.onMessage.listen((message) {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification!.android;
 
-      print('Notification title: ${notification!.title}');
-      print('Notification body: ${notification.body}');
-      print('Count: ${android!.count}');
-      print('Data: ${message.data.toString()}');
+      Log('Notification title: ${notification!.title}');
+      Log('Notification body: ${notification.body}');
+      Log('Count: ${android!.count}');
+      Log('Data: ${message.data.toString()}');
 
       if (Platform.isAndroid) {
         initLocalNotifications(context, message);
-        // showNotification(message);
+        showNotification(message);
       }
       if (Platform.isIOS) {
         foregroundMessage();
@@ -65,7 +65,7 @@ class NotificationService {
     BuildContext context,
     RemoteMessage message,
   ) async {
-    print('================ initLocalNotifications ===============');
+    Log('================ initLocalNotifications ===============');
     var androidInitializationSettings =
         const AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -78,9 +78,9 @@ class NotificationService {
 
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      /*onDidReceiveNotificationResponse: (payload) {
+      onDidReceiveNotificationResponse: (payload) {
         handleMessage(context, message);
-      },*/
+      },
       /*onDidReceiveBackgroundNotificationResponse: (payload) {
         handleMessage(context, message);
       },*/
@@ -89,7 +89,7 @@ class NotificationService {
 
   // function to show visible notification when app is active
   Future<void> showNotification(RemoteMessage message) async {
-    print('================ showNotification ===============');
+    Log('================ showNotification ===============');
     AndroidNotificationChannel channel = AndroidNotificationChannel(
       message.notification!.android!.channelId.toString(),
       message.notification!.android!.channelId.toString(),
@@ -133,18 +133,18 @@ class NotificationService {
   }
 
   void handleMessage(BuildContext context, RemoteMessage message) {
-    print('================ handleMessage ===============');
+    Log('================ handleMessage ===============');
     if (message.data['type'] == 'shopping') {
       Navigator.pushNamed(context, Routes.kShopping);
     }
   }
 
   //handle tap on notification when app is in background or terminated
- /* Future<void> setupInteractMessage(BuildContext context) async {
-    print('================ setupInteractMessage ===============');
+  Future<void> setupInteractMessage(BuildContext context) async {
+    Log('================ setupInteractMessage ===============');
     // When app is terminated
     // RemoteMessage? initialMessage =
-    //     await FirebaseMessaging.instance.getInitialMessage();
+    // await FirebaseMessaging.instance.getInitialMessage();
     RemoteMessage? initialMessage = await messaging.getInitialMessage();
     if (initialMessage != null) {
       // showNotification(initialMessage);
@@ -156,10 +156,10 @@ class NotificationService {
       // showNotification(message);
       handleMessage(context, message);
     });
-  }*/
+  }
 
   Future<void> foregroundMessage() async {
-    print('================ foregroundMessage ===============');
+    Log('================ foregroundMessage ===============');
     // await FirebaseMessaging.instance
     await messaging.setForegroundNotificationPresentationOptions(
       sound: true,
@@ -170,20 +170,20 @@ class NotificationService {
 
   //function to get device token on which we will send the notifications
   Future<String> getDeviceToken() async {
-    print('================ getDeviceToken ===============');
+    Log('================ getDeviceToken ===============');
     String? token = await messaging.getToken();
     return token!;
   }
 
   void isTokenRefreshed() {
-    print('================ isTokenRefreshed ===============');
+    Log('================ isTokenRefreshed ===============');
     messaging.onTokenRefresh.listen((event) {
-      print('Refreshed token: $event');
-      db
+      Log('Refreshed token: $event');
+/*      db
           .collection('device_token')
           .doc('token')
           .set({'key': event.toString()}).onError(
-              (error, _) => print(error.toString()));
+              (error, _) => Log(error.toString()));*/
     });
   }
 }
