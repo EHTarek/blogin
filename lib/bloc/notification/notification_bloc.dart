@@ -26,7 +26,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
     on<NotificationRemoveEvent>((event, emit) async {
       emit(NotificationInitial());
-      notificationDbHelper.removeItem(item: event.item);
+      await notificationDbHelper.removeItem(item: event.item);
       int qt = await notificationDbHelper.getTotalQuantity();
       List<Map<String, dynamic>> notification =
           await notificationDbHelper.getAllNotification();
@@ -44,7 +44,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
     on<NotificationSeenEvent>((event, emit) async {
       emit(NotificationInitial());
-      notificationDbHelper.dbInsertSeenItem(item: event.item);
+      await notificationDbHelper.dbInsertSeenItem(item: event.item);
 
       int qt = await notificationDbHelper.getTotalQuantity();
       List<Map<String, dynamic>> notification =

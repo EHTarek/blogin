@@ -37,9 +37,9 @@ class NotificationDbHelper {
     Database database = await openDatabase(
       path,
       version: version,
-      *//* onConfigure: (db) async {
+      */ /* onConfigure: (db) async {
        await db.delete(table);
-      },*//*
+      },*/ /*
       onCreate: _onCreateSeenDb,
     );
     return database;
@@ -65,6 +65,7 @@ class NotificationDbHelper {
           ) 
         """);
   }
+
 /*  Future _onCreateSeenDb(Database db, int version) async {
     await db.execute(""" CREATE TABLE $tableSeen (
             $columnId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -90,22 +91,26 @@ class NotificationDbHelper {
     Log('Successfully inserted item');
   }
 
-  Future<void> dbInsertSeenItem({required Map<String,dynamic> item}) async {
+  Future<void> dbInsertSeenItem({required Map<String, dynamic> item}) async {
     // Database database = await initSeenDb();
     Database database = await init();
 
-    // If the item does not exist, insert a new row
-    await database.rawInsert("""
+    List<Map<String, dynamic>> seenList = await getSeenNotification();
+
+    if (!seenList.contains(item)) {
+      // If the item does not exist, insert a new row
+      await database.rawInsert("""
       INSERT INTO $tableSeen ($columnId, $columnTitle, $columnBody, $columnPayload) 
       VALUES (?, ?, ?, ?)
     """, [
-      item[columnId],
-      item[columnTitle],
-      item[columnBody],
-      item[columnPayload]
-    ]);
+        item[columnId],
+        item[columnTitle],
+        item[columnBody],
+        item[columnPayload]
+      ]);
 
-    Log('Successfully inserted in seen item db');
+      Log('Successfully inserted in seen item db');
+    }
   }
 
   Future<int> getTotalQuantity() async {
@@ -144,7 +149,7 @@ class NotificationDbHelper {
     Database database = await init();
 
     var result = await database.rawQuery("""
-    SELECT * FROM $table
+    SELECT * FROM $tableSeen
   """);
     List<Map<String, dynamic>> items = [];
     for (var element in result) {
@@ -159,7 +164,7 @@ class NotificationDbHelper {
     return items;
   }
 
-  Future<void> removeItem({required Map<String,dynamic> item}) async {
+  Future<void> removeItem({required Map<String, dynamic> item}) async {
     Database database = await init();
     // Database databaseSeen = await initSeenDb();
 
@@ -167,10 +172,14 @@ class NotificationDbHelper {
       DELETE FROM $table WHERE $columnId = ?
     """, [item[columnId]]);
 
-    await database.rawDelete("""
+    List<Map<String, dynamic>> seenList = await getSeenNotification();
+
+    if (!seenList.contains(item)) {
+      await database.rawDelete("""
       DELETE FROM $tableSeen WHERE $columnId = ?
     """, [item[columnId]]);
-
-    print('Successfully removed item with ID $item from the database.');
+      Log('Successfully removed item with ID $item from the database.');
+    }
+    Log('Successfully removed item with ID $item from the database.');
   }
 }

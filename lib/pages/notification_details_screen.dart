@@ -14,16 +14,22 @@ class NotificationDetailsScreen extends StatelessWidget {
         title: const Text('All Notification'),
       ),
       body: BlocBuilder<NotificationBloc, NotificationState>(
+      // buildWhen: (previous, current) => current is NotificationUpdatedState,
         builder: (context, notificationState) {
           if (notificationState is NotificationUpdatedState) {
+            Log(notificationState.notification);
+            Log(notificationState.seenNotification);
+
             return ListView.builder(
               itemCount: notificationState.notification.length,
               itemBuilder: (context, index) => ListTile(
-                onTap: (){
-                  context.read<NotificationBloc>().add(
-                      NotificationSeenEvent(
-                          item: notificationState.notification
-                              .elementAt(index)));
+                onTap: () {
+                  context.read<NotificationBloc>().add(NotificationSeenEvent(
+                      item: notificationState.notification.elementAt(index)));
+
+                  Log(notificationState.seenNotification.contains(
+                      notificationState.notification.elementAt(index)));
+                  Log(notificationState.notification.elementAt(index));
                 },
                 tileColor: notificationState.seenNotification.contains(
                         notificationState.notification.elementAt(index))
