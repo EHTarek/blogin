@@ -9,6 +9,7 @@ class NotificationDbHelper {
   static const dbName = 'Notifications.db';
 
   static const table = 'received_notification';
+  static const tableSeen = 'seen_notification';
 
   static const columnId = 'id';
   static const columnTitle = 'title';
@@ -30,15 +31,48 @@ class NotificationDbHelper {
     return database;
   }
 
+/*  Future<Database> initSeenDb() async {
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final path = join(documentsDirectory.path, dbName);
+    Database database = await openDatabase(
+      path,
+      version: version,
+      *//* onConfigure: (db) async {
+       await db.delete(table);
+      },*//*
+      onCreate: _onCreateSeenDb,
+    );
+    return database;
+  }*/
+
   // SQL code to create the database table
   Future _onCreate(Database db, int version) async {
-    await db.execute(""" CREATE TABLE $table (
+    await db.execute(""" 
+          CREATE TABLE $table (
+            $columnId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            $columnTitle TEXT NOT NULL,
+            $columnBody TEXT NOT NULL,
+            $columnPayload TEXT NOT NULL
+          )
+        """);
+
+    await db.execute(""" 
+          CREATE TABLE $tableSeen (
+            $columnId INTEGER NOT NULL PRIMARY KEY,
+            $columnTitle TEXT NOT NULL,
+            $columnBody TEXT NOT NULL,
+            $columnPayload TEXT NOT NULL
+          ) 
+        """);
+  }
+/*  Future _onCreateSeenDb(Database db, int version) async {
+    await db.execute(""" CREATE TABLE $tableSeen (
             $columnId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             $columnTitle TEXT NOT NULL,
             $columnBody TEXT NOT NULL,
             $columnPayload TEXT NOT NULL
           ) """);
-  }
+  }*/
 
   Future<void> dbInsert({required RemoteMessage message}) async {
     Database database = await init();
@@ -54,6 +88,24 @@ class NotificationDbHelper {
     ]);
 
     Log('Successfully inserted item');
+  }
+
+  Future<void> dbInsertSeenItem({required Map<String,dynamic> item}) async {
+    // Database database = await initSeenDb();
+    Database database = await init();
+
+    // If the item does not exist, insert a new row
+    await database.rawInsert("""
+      INSERT INTO $tableSeen ($columnId, $columnTitle, $columnBody, $columnPayload) 
+      VALUES (?, ?, ?, ?)
+    """, [
+      item[columnId],
+      item[columnTitle],
+      item[columnBody],
+      item[columnPayload]
+    ]);
+
+    Log('Successfully inserted in seen item db');
   }
 
   Future<int> getTotalQuantity() async {
@@ -87,13 +139,38 @@ class NotificationDbHelper {
     return items;
   }
 
-  Future<void> removeItem({required int itemId}) async {
+  Future<List<Map<String, dynamic>>> getSeenNotification() async {
+    // Database database = await initSeenDb();
     Database database = await init();
+
+    var result = await database.rawQuery("""
+    SELECT * FROM $table
+  """);
+    List<Map<String, dynamic>> items = [];
+    for (var element in result) {
+      final map = {
+        columnId: element[columnId],
+        columnTitle: element[columnTitle],
+        columnBody: element[columnBody],
+        columnPayload: element[columnPayload]
+      };
+      items.add(map);
+    }
+    return items;
+  }
+
+  Future<void> removeItem({required Map<String,dynamic> item}) async {
+    Database database = await init();
+    // Database databaseSeen = await initSeenDb();
 
     await database.rawDelete("""
       DELETE FROM $table WHERE $columnId = ?
-    """, [itemId]);
+    """, [item[columnId]]);
 
-    print('Successfully removed item with ID $itemId from the database.');
+    await database.rawDelete("""
+      DELETE FROM $tableSeen WHERE $columnId = ?
+    """, [item[columnId]]);
+
+    print('Successfully removed item with ID $item from the database.');
   }
 }

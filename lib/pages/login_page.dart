@@ -50,7 +50,7 @@ class LoginPageState extends State<LoginPage> {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text(error.toString()))));
     });
-
+    BlocProvider.of<NotificationBloc>(context).add(NotificationUpdateEvent());
     getDeviceInfo();
     // context.read<CartItemBloc>().add(CartItemLoadDataEvent());
     userLoggedIn();

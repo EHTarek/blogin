@@ -1,3 +1,4 @@
+import 'package:blogin/services/logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,6 +19,17 @@ class NotificationDetailsScreen extends StatelessWidget {
             return ListView.builder(
               itemCount: notificationState.notification.length,
               itemBuilder: (context, index) => ListTile(
+                onTap: (){
+                  context.read<NotificationBloc>().add(
+                      NotificationSeenEvent(
+                          item: notificationState.notification
+                              .elementAt(index)));
+                },
+                tileColor: notificationState.seenNotification.contains(
+                        notificationState.notification.elementAt(index))
+                    ? Colors.white
+                    : Colors.grey.shade400,
+                leading: const Icon(Icons.notifications),
                 title: Text(
                   notificationState.notification
                       .elementAt(index)['title']
@@ -29,6 +41,15 @@ class NotificationDetailsScreen extends StatelessWidget {
                       .elementAt(index)['body']
                       .toString(),
                   overflow: TextOverflow.ellipsis,
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_forever),
+                  onPressed: () {
+                    context.read<NotificationBloc>().add(
+                        NotificationRemoveEvent(
+                            item: notificationState.notification
+                                .elementAt(index)));
+                  },
                 ),
               ),
             );

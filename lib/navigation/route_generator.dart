@@ -51,7 +51,7 @@ class RouteGenerator {
         );
       case Routes.kNotificationScreen:
         return MaterialPageRoute(
-          builder: (_) => const NotificationDetailsScreen(),
+          builder: (_) => NotificationDetailsScreen(),
         );
       default:
         return _errorRoute();
