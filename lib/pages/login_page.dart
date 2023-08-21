@@ -66,7 +66,9 @@ class LoginPageState extends State<LoginPage> {
             InkWell(
               onTap: () {
                 //context.read<NotificationBloc>().add(NotificationViewEvent());
-                Navigator.pushNamed(context, Routes.kNotificationScreen);
+                Navigator.pushNamed(context, Routes.kNotificationScreen).then((value) {
+                  context.read<NotificationBloc>().add(AllNotificationSeenEvent());
+                },);
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),

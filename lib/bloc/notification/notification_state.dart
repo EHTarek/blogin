@@ -10,10 +10,9 @@ class NotificationInitial extends NotificationState {
 class NotificationUpdatedState extends NotificationState {
   final int updatedCount;
   final List<Map<String, dynamic>> notification;
-  final List<Map<String, dynamic>> seenNotification;
 
   NotificationUpdatedState(
-      {required this.updatedCount, required this.notification, required this.seenNotification});
+      {required this.updatedCount, required this.notification});
 
   @override
   List<Object> get props => [];

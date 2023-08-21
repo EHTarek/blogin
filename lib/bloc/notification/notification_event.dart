@@ -17,9 +17,15 @@ class NotificationRemoveEvent extends NotificationEvent {
 }
 
 class NotificationSeenEvent extends NotificationEvent {
-  final Map<String, dynamic> item;
+  final int itemId;
 
-  NotificationSeenEvent({required this.item});
+  NotificationSeenEvent({required this.itemId});
+
+  @override
+  List<Object?> get props => [];
+}
+
+class AllNotificationSeenEvent extends NotificationEvent {
 
   @override
   List<Object?> get props => [];

@@ -14,27 +14,26 @@ class NotificationDetailsScreen extends StatelessWidget {
         title: const Text('All Notification'),
       ),
       body: BlocBuilder<NotificationBloc, NotificationState>(
-      // buildWhen: (previous, current) => current is NotificationUpdatedState,
+        // buildWhen: (previous, current) => current is NotificationUpdatedState,
         builder: (context, notificationState) {
-          if (notificationState is NotificationUpdatedState) {
+          if (notificationState is NotificationUpdatedState &&
+              notificationState.notification.isNotEmpty) {
             Log(notificationState.notification);
-            Log(notificationState.seenNotification);
 
-            return ListView.builder(
+            return ListView.separated(
               itemCount: notificationState.notification.length,
               itemBuilder: (context, index) => ListTile(
                 onTap: () {
                   context.read<NotificationBloc>().add(NotificationSeenEvent(
-                      item: notificationState.notification.elementAt(index)));
+                      itemId: notificationState.notification
+                          .elementAt(index)['id']));
 
-                  Log(notificationState.seenNotification.contains(
-                      notificationState.notification.elementAt(index)));
                   Log(notificationState.notification.elementAt(index));
                 },
-                tileColor: notificationState.seenNotification.contains(
-                        notificationState.notification.elementAt(index))
-                    ? Colors.white
-                    : Colors.grey.shade400,
+                tileColor:
+                    notificationState.notification.elementAt(index)['seen'] == 0
+                        ? Colors.grey.shade400
+                        : Colors.white,
                 leading: const Icon(Icons.notifications),
                 title: Text(
                   notificationState.notification
@@ -58,6 +57,7 @@ class NotificationDetailsScreen extends StatelessWidget {
                   },
                 ),
               ),
+              separatorBuilder: (context, index) => const SizedBox(height: 4),
             );
           }
           return const Center(
