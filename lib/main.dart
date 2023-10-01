@@ -11,13 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:path/path.dart';
-
+import 'injection_container.dart' as di;
 import 'bloc/home/home_bloc.dart';
 import 'bloc/login/login_bloc.dart';
 
 main() async {
   Bloc.observer = const AppObserver();
-
+  di.init();
   /* final deviceInfoPlugin = DeviceInfoPlugin();
   final deviceInfo = await deviceInfoPlugin.deviceInfo;
   final allInfo = deviceInfo.data;
